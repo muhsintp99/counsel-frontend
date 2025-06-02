@@ -69,12 +69,12 @@ export default function DashboardDefault() {
       <Grid sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} size={{ md: 8 }} />
       {/* row 2 */}
       <Grid size={{ xs: 12, md: 7, lg: 8 }}>
-        <MainCard sx={{ mt: 2 }} content={false}>
+        <MainCard content={false}>
           <OrdersTable />
         </MainCard>
       </Grid>
       <Grid size={{ xs: 12, md: 5, lg: 4 }}>
-        <MainCard sx={{ mt: 2 }} content={false}>
+        <MainCard  content={false}>
           <List
             component="nav"
             sx={{

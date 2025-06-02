@@ -21,9 +21,9 @@ const Intake = Loadable(lazy(() => import('../pages/view/colleges/index')));
 const Course = Loadable(lazy(() => import('../pages/view/colleges/index')));
 
 // render - Utitlite
-const Services = Loadable(lazy(() => import('../pages/view/colleges/index')));
-const Blog = Loadable(lazy(() => import('../pages/view/colleges/index')));
-const Gallery = Loadable(lazy(() => import('../pages/view/colleges/index')));
+const Services = Loadable(lazy(() => import('../pages/view/service/index')));
+const Blog = Loadable(lazy(() => import('../pages/view/blog/index')));
+const Gallery = Loadable(lazy(() => import('../pages/view/gallery/index')));
 
 // render - Support
 const MyTeam = Loadable(lazy(() => import('../pages/view/colleges/index')));
