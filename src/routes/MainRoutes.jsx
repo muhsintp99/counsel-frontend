@@ -10,15 +10,17 @@ import { Navigate } from 'react-router';
 
 // render- Dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/view/dashboard/default')));
+const Profile = Loadable(lazy(() => import('../layout/Dashboard/Header/HeaderContent/Profile/profile')));
 
 // render - Enquiries
-const Enqiries = Loadable(lazy(() => import('../pages/view/colleges/index')));
-const FollowUp = Loadable(lazy(() => import('../pages/view/colleges/index')));
+const Enqiries = Loadable(lazy(() => import('../pages/view/enquries/index')));
+const FollowUp = Loadable(lazy(() => import('../pages/view/follow-up/index')));
+const Contact = Loadable(lazy(() => import('../pages/view/contact/index')));
 
 // render - colleges
 const Collegs = Loadable(lazy(() => import('../pages/view/colleges/index')));
-const Intake = Loadable(lazy(() => import('../pages/view/colleges/index')));
-const Course = Loadable(lazy(() => import('../pages/view/colleges/index')));
+const Intake = Loadable(lazy(() => import('../pages/view/intake/index')));
+const Course = Loadable(lazy(() => import('../pages/view/courses/index')));
 
 // render - Utitlite
 const Services = Loadable(lazy(() => import('../pages/view/service/index')));
@@ -26,7 +28,7 @@ const Blog = Loadable(lazy(() => import('../pages/view/blog/index')));
 const Gallery = Loadable(lazy(() => import('../pages/view/gallery/index')));
 
 // render - Support
-const MyTeam = Loadable(lazy(() => import('../pages/view/colleges/index')));
+const MyTeam = Loadable(lazy(() => import('../pages/view/support/index')));
 const Country = Loadable(lazy(() => import('../pages/view/country/index')));
 
 // render - color
@@ -70,6 +72,10 @@ const MainRoutes = {
     {
       path: 'follow-up',
       element: <FollowUp />
+    },
+    {
+      path: 'contact',
+      element: <Contact />
     },
 
     // ----------Schools----
@@ -129,6 +135,10 @@ const MainRoutes = {
     {
       path: 'sample-page',
       element: <SamplePage />
+    },
+    {
+      path: 'profile',
+      element: <Profile />
     }
   ]
 };

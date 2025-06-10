@@ -11,13 +11,25 @@ const sagaMiddleware = createSagaMiddleware();
 
 // ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
 
+// const store = configureStore({
+//   reducer: reducers,
+//   middleware: (getDefaultMiddleware) =>
+//     config.env === 'stage'
+//       ? getDefaultMiddleware().concat(sagaMiddleware)
+//       : getDefaultMiddleware().concat(logger, sagaMiddleware)
+// });
+
 const store = configureStore({
   reducer: reducers,
   middleware: (getDefaultMiddleware) =>
-    config.env === 'stage'
-      ? getDefaultMiddleware().concat(sagaMiddleware)
-      : getDefaultMiddleware().concat(logger, sagaMiddleware)
+    getDefaultMiddleware({
+      serializableCheck: false
+    }).concat(
+      config.env === 'stage' ? sagaMiddleware : [logger, sagaMiddleware]
+    )
 });
+
+
 sagaMiddleware.run(saga);
 
 const { dispatch } = store;

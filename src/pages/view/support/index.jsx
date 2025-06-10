@@ -1,4 +1,4 @@
-import UnderConstruction from '../../utils/UnderConstruction'
+import UnderConstruction from "../../../utils/UnderConstruction"
 
 const index = () => {
   return (

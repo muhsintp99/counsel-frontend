@@ -7,7 +7,7 @@ const loginSlice = createSlice({
     loading: false,
     error: null,
     isSuccess: false,
-    isError: false
+    isError: false,
   },
   reducers: {
     userLogin: (state) => {
@@ -27,11 +27,30 @@ const loginSlice = createSlice({
       state.error = action.payload;
       state.isSuccess = false;
       state.isError = true;
+    },
+    resetLoginState: (state) => {
+      state.data = {};
+      state.loading = false;
+      state.error = null;
+      state.isSuccess = false;
+      state.isError = false;
     }
   }
 });
 
-export const { userLogin, loginSuccess, loginFail } = loginSlice.actions;
+export const {
+  userLogin,
+  loginSuccess,
+  loginFail,
+  resetLoginState
+} = loginSlice.actions;
+
+// Optional selectors
+export const selectLoginState = (state) => state.login;
+export const selectUserData = (state) => state.login.data;
+export const selectIsLoading = (state) => state.login.loading;
+export const selectIsSuccess = (state) => state.login.isSuccess;
+export const selectIsError = (state) => state.login.isError;
 export const selectError = (state) => state.login.error;
 
 export default loginSlice.reducer;

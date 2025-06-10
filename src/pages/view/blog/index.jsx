@@ -151,16 +151,12 @@ const Index = () => {
     {
       field: 'action',
       headerName: 'Actions',
-      width: 200,
+      width: 180,
       sortable: false,
       renderCell: (params) => (
         <>
           <EyeOutlined style={pageStyles.viewIcon} onClick={() => handleView(params.row)} />
           <FormOutlined style={pageStyles.editIcon} onClick={() => handleEdit(params.row)} />
-          <DeleteOutlined
-            style={pageStyles.deleteIcon}
-            onClick={() => handleDelete(params.row, 'soft')}
-          />
           <DeleteOutlined
             style={{ ...pageStyles.deleteIcon, color: 'red' }}
             onClick={() => handleDelete(params.row, 'hard')}

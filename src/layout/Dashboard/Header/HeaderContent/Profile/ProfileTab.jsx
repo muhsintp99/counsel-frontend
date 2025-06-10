@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import List from '@mui/material/List';
@@ -13,9 +14,11 @@ import UserOutlined from '@ant-design/icons/UserOutlined';
 // ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 
 export default function ProfileTab({ handleLogout }) {
+  const navigate = useNavigate();
+
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-      <ListItemButton>
+      <ListItemButton onClick={() => navigate('/profile')}>
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>

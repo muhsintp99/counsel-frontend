@@ -69,7 +69,23 @@ const Index = () => {
     setOpenDeleteDialog(true);
   };
 
+  // const handleDeleteConfirm = (data) => {
+  //   if (data && data._id) {
+  //     dispatch(deleteCountry(data._id));
+  //     setOpenDeleteDialog(false);
+  //     setDeleteData(null);
+  //     dispatch(getCountry());
+  //   }
+  // };
+
   const handleDeleteConfirm = (data) => {
+    if (data && data.name?.toLowerCase() === 'india') {
+      alert('Cannot delete India');
+      setOpenDeleteDialog(false);
+      setDeleteData(null);
+      return;
+    }
+
     if (data && data._id) {
       dispatch(deleteCountry(data._id));
       setOpenDeleteDialog(false);
@@ -78,31 +94,31 @@ const Index = () => {
     }
   };
 
+
   const handleSubmitForm = (values) => {
     console.log('Form Values:', values);
-    // Create a plain JavaScript object for both add and update
+
     const payload = {
       name: values.countryName || values.name || '',
       code: values.code || values.countryCode || '',
       isoCode: values.isoCode || '',
       dialCode: values.dialCode || '',
       currency: values.currency || '',
-      image: values.image // File object or null
+      image: values.image || '',
+      // image is removed because it's a File object (non-serializable)
     };
 
     if (editData && editData._id) {
-      // Update existing country
       dispatch(updateCountry({ id: editData._id, data: payload }));
     } else {
-      // Add new country
       dispatch(addCountry(payload));
     }
+
     dispatch(getCountry());
     setOpenDialog(false);
     setEditData(null);
   };
 
-  // Ensure countries is an array before filtering
   const rows = useMemo(() => {
     const validCountries = Array.isArray(countries) ? countries : [];
     if (!Array.isArray(countries)) {
@@ -156,26 +172,35 @@ const Index = () => {
       )
     },
     {
-      field: 'action',
+      field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      flex: 1,
       sortable: false,
-      renderCell: (params) => (
-        <>
-          <EyeOutlined
-            style={pageStyles.viewIcon}
-            onClick={() => handleView(params.row)}
-          />
-          <FormOutlined
-            style={pageStyles.editIcon}
-            onClick={() => handleEdit(params.row)}
-          />
-          <DeleteOutlined
-            style={pageStyles.deleteIcon}
-            onClick={() => handleDelete(params.row)}
-          />
-        </>
-      ),
+      renderCell: (params) => {
+        const countryName = params.row.name?.toLowerCase();
+        const isIndia = countryName === 'india';
+
+        return (
+          <>
+            <EyeOutlined
+              style={pageStyles.viewIcon}
+              onClick={() => handleView(params.row)}
+            />
+            {!isIndia && (
+              <>
+                <FormOutlined
+                  style={pageStyles.editIcon}
+                  onClick={() => handleEdit(params.row)}
+                />
+                <DeleteOutlined
+                  style={pageStyles.deleteIcon}
+                  onClick={() => handleDelete(params.row)}
+                />
+              </>
+            )}
+          </>
+        );
+      },
     },
   ];
 

@@ -1,10 +1,11 @@
 // assets
-import { QuestionAnswer, Task } from '@mui/icons-material';
+import { Contacts, QuestionAnswer, Task } from '@mui/icons-material';
 
 // icons
 const icons = {
   QuestionAnswer,
-  Task
+  Task,
+  Contacts
 };
 
 // ==============================|| MENU ITEMS - enquiries ||============================== //
@@ -27,6 +28,13 @@ const enquiries = {
       type: 'item',
       url: '/follow-up',
       icon: icons.Task
+    },
+    {
+      id: 'contact',
+      title: 'Contacts',
+      type: 'item',
+      url: '/contact',
+      icon: icons.Contacts
     },
 
   ]

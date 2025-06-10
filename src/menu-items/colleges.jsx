@@ -15,6 +15,7 @@ const colleges = {
     title: 'Colleges',
     type: 'group',
     children: [
+        
         {
             id: 'colleges',
             title: 'Colleges',

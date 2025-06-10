@@ -13,13 +13,16 @@ function* getCountrySaga() {
       authorization: false,
     };
     const response = yield call(commonApi, params);
+    console.log('GET Country Response:', response); // ✅ Log
     const countries = response.data || response || [];
     yield put(actions.getCountrySuccess(countries));
   } catch (error) {
+    console.error('GET Country Error:', error);
     yield put(actions.getCountryFail(error.message));
     toast.error(error.message || 'Failed to load countries');
   }
 }
+
 
 // GET Country By ID
 function* getCountryByIdSaga(action) {
@@ -28,6 +31,8 @@ function* getCountryByIdSaga(action) {
       api: `${config.configApi}/countries/${action.payload}`,
       method: 'GET',
       authorization: false,
+      successAction: actions.addCountrySuccess,
+      failAction: actions.getCountryByIdFail
     };
     const response = yield call(commonApi, params);
     const country = response.data || response;
@@ -68,6 +73,7 @@ function* addCountrySaga(action) {
     };
 
     yield call(commonApi, params);
+    yield put(actions.getCountry());// Refresh the list after adding
     toast.success('Country added successfully');
   } catch (error) {
     console.error('Add Country Error:', error);
@@ -105,6 +111,7 @@ function* updateCountrySaga(action) {
     };
 
     yield call(commonApi, params);
+    yield put(actions.getCountry());
     toast.success('Country updated successfully');
   } catch (error) {
     console.error('Update Country Error:', error);
@@ -114,24 +121,54 @@ function* updateCountrySaga(action) {
 }
 
 // DELETE Country
+// function* deleteCountrySaga(action) {
+//   try {
+//     const params = {
+//       api: `${config.configApi}/countries/${action.payload}`,
+//       method: 'DELETE',
+//       authorization: 'Bearer',
+//       successAction: actions.deleteCountrySuccess,
+//       failAction: actions.deleteCountryFail
+//     };
+//     yield call(commonApi, params);
+//     yield put(actions.deleteCountrySuccess(action.payload));
+//      yield put(actions.getCountry());
+//     toast.success('Country deleted successfully');
+//   } catch (error) {
+//     console.error('Delete Country Error:', error);
+//     yield put(actions.deleteCountryFail(error.message));
+//     toast.error(error.message || 'Delete failed');
+//   }
+// }
+
 function* deleteCountrySaga(action) {
   try {
+    const { id, name } = action.payload;
+
+    if (name?.toLowerCase() === 'india') {
+      toast.error('Cannot delete India');
+      return;
+    }
+
     const params = {
       api: `${config.configApi}/countries/${action.payload}`,
       method: 'DELETE',
       authorization: 'Bearer',
       successAction: actions.deleteCountrySuccess,
-      failAction: actions.deleteCountryFail
+      failAction: actions.deleteCountryFail,
     };
+
     yield call(commonApi, params);
     yield put(actions.deleteCountrySuccess(action.payload));
+    yield put(actions.getCountry());
     toast.success('Country deleted successfully');
   } catch (error) {
     console.error('Delete Country Error:', error);
     yield put(actions.deleteCountryFail(error.message));
-    toast.error(error.message || 'Delete failed');
+    toast.error(error.message || 'Failed to delete country');
   }
 }
+
 
 // GET Country Count
 function* totalCountSaga() {

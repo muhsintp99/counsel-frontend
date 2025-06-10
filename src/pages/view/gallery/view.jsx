@@ -16,7 +16,10 @@ const View = ({ open, onClose, data }) => {
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: data && Object.keys(data).length > 6 ? '50%' : '30%',
+          width: {
+            sm: data && Object.keys(data).length > 6 ? '90%' : '50%',
+            md: data && Object.keys(data).length > 6 ? '50%' : '30%',
+          }
         },
       }}
     >
@@ -96,30 +99,6 @@ const View = ({ open, onClose, data }) => {
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Is Deleted</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.isDeleted ? 'Yes' : 'No'}</Typography>
-                </Box>
-              </Box>
-
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Created By</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{capitalize(data.createdBy)}</Typography>
-                </Box>
-              </Box>
-
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Updated By</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{capitalize(data.updatedBy)}</Typography>
-                </Box>
-              </Box>
-
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Created At</strong></Typography>
                   <Typography sx={viewDrawerStyles.value}>
                     {data.createdAt ? new Date(data.createdAt).toLocaleString() : 'N/A'}
@@ -127,15 +106,6 @@ const View = ({ open, onClose, data }) => {
                 </Box>
               </Box>
 
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Updated At</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>
-                    {data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'N/A'}
-                  </Typography>
-                </Box>
-              </Box>
             </Grid>
           </Grid>
         ) : (

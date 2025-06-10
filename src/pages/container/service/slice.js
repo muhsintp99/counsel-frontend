@@ -1,122 +1,118 @@
+// src/redux/slices/serviceSlice.js
 import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {
+  services: [],          // list view
+  selectedService: null, // detail view
+  serviceCount: 0,       // total (non-deleted) docs
+  loading: false,
+  error: null,
+};
 
 const serviceSlice = createSlice({
   name: 'service',
-  initialState: {
-    services: [],
-    selectedService: {},
-    serviceCount: 0,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
-    // Create
-    addService: state => { state.loading = true; },
-    addServiceSuccess: (state, action) => {
+    /* ───────── GET ALL ───────── */
+    getServices: state => { state.loading = true; },
+    getServicesSuccess: (state, { payload }) => {
       state.loading = false;
-      state.services.push(action.payload);
+      state.services = Array.isArray(payload) ? payload : payload?.data || [];
+      state.serviceCount = state.services.length;
+      state.error = null;
+    },
+    getServicesFail: (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+    },
+
+    /* ───────── GET BY ID ─────── */
+    getServiceById: state => { state.loading = true; },
+    getServiceByIdSuccess: (state, { payload }) => {
+      state.loading = false;
+      state.selectedService = payload;
+      state.error = null;
+    },
+    getServiceByIdFail: (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+    },
+
+    /* ───────── TOTAL COUNT ───── */
+    totalServiceCount: state => { state.loading = true; },
+    totalServiceCountSuccess: (state, { payload }) => {
+      state.loading = false;
+      state.serviceCount = payload.count;
+    },
+    totalServiceCountFail: (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+    },
+
+    /* ───────── ADD ───────────── */
+    addService: state => { state.loading = true; },
+    addServiceSuccess: (state, { payload }) => {
+      state.loading = false;
+      state.services.push(payload);
       state.serviceCount += 1;
     },
-    addServiceFail: (state, action) => {
+    addServiceFail: (state, { payload }) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = payload;
     },
 
-    // Get all
-    getServices: state => { state.loading = true; },
-    getServicesSuccess: (state, action) => {
-      state.loading = false;
-      state.services = Array.isArray(action.payload) ? action.payload : action.payload.data || [];
-      state.serviceCount = Array.isArray(action.payload) ? action.payload.length : action.payload.total || action.payload.data?.length || 0;
-      state.error = null;
-    },
-    getServicesFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // Get by ID
-    getServiceById: state => { state.loading = true; },
-    getServiceByIdSuccess: (state, action) => {
-      state.loading = false;
-      state.selectedService = action.payload;
-      state.error = null;
-    },
-    getServiceByIdFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // Total Count
-    totalServiceCount: state => { state.loading = true; },
-    totalServiceCountSuccess: (state, action) => {
-      state.loading = false;
-      state.serviceCount = action.payload.count;
-    },
-    totalServiceCountFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // Update
+    /* ───────── UPDATE ────────── */
     updateService: state => { state.loading = true; },
-    updateServiceSuccess: (state, action) => {
+    getServicesSuccess: (state, { payload }) => {
       state.loading = false;
-      const updated = action.payload;
-      state.services = state.services.map((item) =>
-        item._id === updated._id ? updated : item
-      );
-      if (state.selectedService?._id === updated._id) {
-        state.selectedService = updated;
-      }
-    },
-    updateServiceFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
+      state.services = Array.isArray(payload)
+        ? payload.filter(item => item && typeof item === 'object' && item._id)
+        : payload?.data?.filter(item => item && typeof item === 'object' && item._id) || [];
+      state.serviceCount = state.services.length;
+      state.error = null;
     },
 
-    // Soft Delete
+    updateServiceFail: (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+    },
+
+    /* ───────── SOFT DELETE ───── */
     deleteService: state => { state.loading = true; },
-    deleteServiceSuccess: (state, action) => {
-      const deletedId = action.payload;
+    deleteServiceSuccess: (state, { payload: id }) => {
       state.loading = false;
-      state.services = state.services.filter((s) => s._id !== deletedId);
-      if (state.selectedService?._id === deletedId) {
-        state.selectedService = {};
-      }
+      state.services = state.services.filter(s => s._id !== id);
+      if (state.selectedService?._id === id) state.selectedService = null;
       state.serviceCount -= 1;
     },
-    deleteServiceFail: (state, action) => {
+    deleteServiceFail: (state, { payload }) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = payload;
     },
 
-    // Hard Delete
+    /* ───────── HARD DELETE ───── */
     hardDeleteService: state => { state.loading = true; },
-    hardDeleteServiceSuccess: (state, action) => {
-      const deletedId = action.payload;
+    hardDeleteServiceSuccess: (state, { payload: id }) => {
       state.loading = false;
-      state.services = state.services.filter((s) => s._id !== deletedId);
-      if (state.selectedService?._id === deletedId) {
-        state.selectedService = {};
-      }
+      state.services = state.services.filter(s => s._id !== id);
+      if (state.selectedService?._id === id) state.selectedService = null;
       state.serviceCount -= 1;
     },
-    hardDeleteServiceFail: (state, action) => {
+    hardDeleteServiceFail: (state, { payload }) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = payload;
     },
-  }
+  },
 });
 
 export const {
   getServices, getServicesSuccess, getServicesFail,
-  addService, addServiceSuccess, addServiceFail,
   getServiceById, getServiceByIdSuccess, getServiceByIdFail,
   totalServiceCount, totalServiceCountSuccess, totalServiceCountFail,
+  addService, addServiceSuccess, addServiceFail,
   updateService, updateServiceSuccess, updateServiceFail,
   deleteService, deleteServiceSuccess, deleteServiceFail,
-  hardDeleteService, hardDeleteServiceSuccess, hardDeleteServiceFail
+  hardDeleteService, hardDeleteServiceSuccess, hardDeleteServiceFail,
 } = serviceSlice.actions;
 
 export default serviceSlice.reducer;

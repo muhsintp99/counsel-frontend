@@ -8,7 +8,9 @@ import {
   Button,
   Grid,
   Box,
-  Typography
+  Typography,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -32,6 +34,7 @@ const validationSchema = Yup.object({
     }),
   createdBy: Yup.string().default('admin'),
   updatedBy: Yup.string().default('admin'),
+  isVisible: Yup.boolean().default(true), // Added visibility validation
 });
 
 const AddEdit = ({ open, onClose, onSubmit, editData }) => {
@@ -53,6 +56,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     link: editData?.link || '',
     createdBy: editData?.createdBy || 'admin',
     updatedBy: editData?.updatedBy || 'admin',
+    isVisible: editData?.isVisible !== undefined ? editData.isVisible : true, // Added visibility field
     image: null
   };
 
@@ -129,6 +133,34 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     error={touched.link && Boolean(errors.link)}
                     helperText={touched.link && errors.link}
                   />
+                </Grid>
+
+                {/* Visibility Checkbox */}
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                    <FormControlLabel
+                      control={
+                        <Field name="isVisible">
+                          {({ field }) => (
+                            <Checkbox
+                              {...field}
+                              checked={values.isVisible}
+                              onChange={(e) => setFieldValue('isVisible', e.target.checked)}
+                              color="primary"
+                            />
+                          )}
+                        </Field>
+                      }
+                      label={
+                        <Typography variant="body1">
+                          Make blog visible to public
+                        </Typography>
+                      }
+                    />
+                  </Box>
+                  <Typography variant="caption" color="textSecondary" sx={{ ml: 4, display: 'block' }}>
+                    {values.isVisible ? 'Blog will be published and visible to users' : 'Blog will be saved as draft'}
+                  </Typography>
                 </Grid>
 
                 {/* Image Upload */}

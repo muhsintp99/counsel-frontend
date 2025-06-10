@@ -1,5 +1,3 @@
-import { fontSize, fontWeight, height, lineHeight, maxHeight, maxWidth } from "@mui/system";
-import { color } from "framer-motion";
 
 export const pageStyles = {
     mainBox: {
@@ -31,10 +29,10 @@ export const pageStyles = {
         color: "#343434",
         outline: "none",
         boxShadow: "none",
-        lineHeight:'0',
+        lineHeight: '0',
         maxHeight: '35px',
     },
-    
+
     newButtonBox: {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -62,6 +60,12 @@ export const pageStyles = {
         fontWeight: '600'
     },
 
+    buttonIcon:{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
     viewIcon: {
         fontSize: "20px",
         padding: '4px 6px',
@@ -84,6 +88,24 @@ export const pageStyles = {
         fontSize: "20px",
         padding: '4px 6px',
         color: "#ff4455",
+        marginRight: '8px',
+        fontWeight: '600',
+        borderRadius: "5px",
+        cursor: 'pointer'
+    },
+    softIcon: {
+        fontSize: "20px",
+        padding: '4px 6px',
+        color: "#ff4455",
+        marginRight: '8px',
+        fontWeight: '600',
+        borderRadius: "5px",
+        cursor: 'pointer'
+    },
+    followUpIcon: {
+        fontSize: "20px",
+        padding: '4px 6px',
+        color: "#1677ff",
         marginRight: '8px',
         fontWeight: '600',
         borderRadius: "5px",

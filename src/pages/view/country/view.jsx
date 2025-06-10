@@ -13,7 +13,10 @@ const View = ({ open, onClose, data }) => {
     <Drawer anchor="right" open={open} onClose={onClose}
       PaperProps={{
         sx: {
-          width: data && Object.keys(data).length > 6 ? '50%' : '30%',
+          width: {
+            sm: data && Object.keys(data).length > 6 ? '90%' : '50%',
+            md: data && Object.keys(data).length > 6 ? '50%' : '30%',
+          }
         },
       }}>
       <Box sx={viewDrawerStyles.mainBox}>

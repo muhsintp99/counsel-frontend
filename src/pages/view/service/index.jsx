@@ -4,9 +4,9 @@ import {
   addService,
   deleteService,
   hardDeleteService,
-  getServices,
   getServiceById,
   updateService,
+  getServices,
 } from '../../container/service/slice';
 import { StyledDataGrid } from '../../../assets/style/index';
 import {
@@ -41,7 +41,9 @@ const Index = () => {
   const [deleteType, setDeleteType] = useState('soft'); // 'soft' or 'hard'
 
   const dispatch = useDispatch();
-  const { services, serviceCount, selectedService, loading, error } = useSelector((state) => state.service || { services: [], serviceCount: 0, selectedService: {}, loading: false, error: null });
+const { services, serviceCount, selectedService, loading, error } = useSelector((state) => state.services);
+
+  console.log("Redux state.services:", services);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -106,29 +108,35 @@ const Index = () => {
     setEditData(null);
   };
 
-  const rows = useMemo(() => {
-    const validServices = Array.isArray(services) ? services : [];
-    if (!Array.isArray(services)) {
-      console.warn('Redux state.services is not an array:', services);
-    }
-    return validServices
-      .filter(
-        (item) =>
+const rows = useMemo(() => {
+  const validServices = Array.isArray(services) ? services.filter(item => item && typeof item === 'object') : [];
+  if (!Array.isArray(services)) {
+    console.warn('Redux state.services is not an array:', services);
+  }
+  return validServices
+    .filter(
+      (item) =>
+        item && 
+        (
           (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.shortDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.fullDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.link || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.points?.some(
+          (item.points?.some(
             (point) =>
-              (point.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-              (point.description || '').toLowerCase().includes(searchQuery.toLowerCase())
-          )
-      )
-      .map((item, index) => ({
-        ...item,
-        id: index + 1 || item._id || '',
-      }));
-  }, [services, searchQuery]);
+              point && 
+              (
+                (point.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (point.description || '').toLowerCase().includes(searchQuery.toLowerCase())
+              )
+          ) || false)
+        )
+    )
+    .map((item, index) => ({
+      ...item,
+      id: index + 1 ||item._id , // Prefer _id, fallback to index
+    }));
+}, [services, searchQuery]);
 
   const memoizedEditData = useMemo(() => editData, [editData]);
 
@@ -171,10 +179,6 @@ const Index = () => {
           <EyeOutlined style={pageStyles.viewIcon} onClick={() => handleView(params.row)} />
           <FormOutlined style={pageStyles.editIcon} onClick={() => handleEdit(params.row)} />
           <DeleteOutlined
-            style={pageStyles.deleteIcon}
-            onClick={() => handleDelete(params.row, 'soft')}
-          />
-          <DeleteOutlined
             style={{ ...pageStyles.deleteIcon, color: 'red' }}
             onClick={() => handleDelete(params.row, 'hard')}
           />
@@ -189,7 +193,6 @@ const Index = () => {
       <Typography component="p" sx={pageStyles.countList}>
         <span style={{ color: '#234155', fontWeight: 600 }}>{serviceCount} {title}</span> are listed below
       </Typography>
-
       {error && (
         <Typography variant="body2" color="error" sx={{ mt: 2 }}>
           {error}
