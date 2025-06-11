@@ -24,7 +24,7 @@ import IconButton from 'components/@extended/IconButton';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
 import config from '../../../../../config';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom'; // fixed: should be react-router-dom
 
 export default function Profile() {
   const theme = useTheme();
