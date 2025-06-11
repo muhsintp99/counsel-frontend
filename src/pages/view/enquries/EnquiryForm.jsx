@@ -24,7 +24,7 @@ import School from '@mui/icons-material/School';
 import LocationOn from '@mui/icons-material/LocationOn';
 import Message from '@mui/icons-material/Message';
 import { createEnquiry } from '../../container/enquries/slice';
-import { getCourses } from '../../container/courses/slice';
+import { getCourse } from '../../container/courses/slice';
 import { getColleges } from '../../container/colleges/slice';
 
 const EnquiryForm = () => {
@@ -44,7 +44,7 @@ const EnquiryForm = () => {
 
   useEffect(() => {
     // Fetch courses and colleges when component mounts
-    dispatch(getCourses());
+    dispatch(getCourse());
     dispatch(getColleges());
   }, [dispatch]);
 
