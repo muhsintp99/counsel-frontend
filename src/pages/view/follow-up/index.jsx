@@ -17,7 +17,7 @@ import { DeleteOutlined, EyeOutlined, EditOutlined, SearchOutlined } from '@ant-
 import { StyledDataGrid } from '../../../assets/style/index';
 import { pageStyles } from '../../../assets/style/commen';
 import AddEditFollowUp from './AddEditFollowUp';
-import View from './View';
+import View from './view';
 import DeleteModel from '../../../utils/defult/DeleteModel';
 import FormatDate from '../../../utils/defult/FormatDate';
 
