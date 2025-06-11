@@ -24,11 +24,13 @@ import IconButton from 'components/@extended/IconButton';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
 import config from '../../../../../config';
+import { useNavigate } from 'react-router';
 
 export default function Profile() {
   const theme = useTheme();
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Read user data from localStorage
   const adminUser = JSON.parse(localStorage.getItem('adminUser'));
@@ -52,7 +54,8 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('adminUser');
     localStorage.removeItem('adminToken');
-    window.location.href = '/login';
+    // window.location.href = '/login';
+    navigate('/login');
   };
 
   return (
