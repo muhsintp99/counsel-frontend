@@ -42,7 +42,7 @@ import '@fontsource/public-sans/700.css';
 import App from './App';
 import { store } from 'store';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from 'react-router';
+// import { BrowserRouter } from 'react-router';
 
 
 const container = document.getElementById('root');
@@ -66,9 +66,9 @@ root.render(
       theme="light"
     />
     <ReduxProvider store={store}>
-      <BrowserRouter basename="/counsel-frontend">
+      {/* <BrowserRouter basename="/counsel-frontend"> */}
         <App />
-      </BrowserRouter>
+      {/* </BrowserRouter> */}
     </ReduxProvider>
   </StrictMode>
 );

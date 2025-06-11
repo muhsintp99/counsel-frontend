@@ -9,7 +9,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
+      // this ensures that the browser opens upon server start
       open: true,
+      // this sets a default port to 3000
       port: PORT,
       host: true,
       proxy: {
@@ -51,7 +53,7 @@ export default defineConfig(({ mode }) => {
         // },
       ]
     },
-    base: '/counsel-frontend/',
+    base: API_URL,
     plugins: [react(), jsconfigPaths()]
   };
 });
