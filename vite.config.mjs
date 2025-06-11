@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => {
         // },
       ]
     },
-    base: API_URL,
+    base: '/counsel-frontend/',
     plugins: [react(), jsconfigPaths()]
   };
 });
