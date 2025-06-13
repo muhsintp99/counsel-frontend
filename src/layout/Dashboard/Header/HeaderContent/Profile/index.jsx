@@ -23,7 +23,7 @@ import IconButton from 'components/@extended/IconButton';
 // assets
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
-import config from '../../../../../config';
+// import config from '../../../../../config';
 import { useNavigate } from 'react-router-dom'; // fixed: should be react-router-dom
 
 export default function Profile() {
@@ -37,9 +37,8 @@ export default function Profile() {
   const fname = adminUser?.user?.fname || '';
   const lname = adminUser?.user?.lname || '';
   const userType = adminUser?.user?.userType || '';
-  const image = adminUser?.user?.image ? `${config.configApi}/${adminUser.user.image}` : avatar1;
+  const image = adminUser?.user?.image ? `${adminUser.user.image}` : avatar1;
 
-  console.log('Profile image URL:', image);
   const normalizedPicture = image.replace(/([^:]\/)\/+/g, "$1");
 
   const handleToggle = () => {
@@ -56,7 +55,7 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('adminUser');
     localStorage.removeItem('adminToken');
-    // window.location.href = '/login';
+    window.location.href = '/login';
     // navigate('/login');
   };
 
