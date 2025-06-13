@@ -8,34 +8,51 @@ import {
   Button,
   Grid,
   Box,
-  Typography
+  Typography,
 } from '@mui/material';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 
-// Validation schema based on service schema
+// Validation schema
 const validationSchema = Yup.object({
-  title: Yup.string().required('Title is required'),
-  shortDesc: Yup.string().required('Short Description is required'),
-  fullDesc: Yup.string().required('Full Description is required'),
-  link: Yup.string()
-    .nullable()
-    .matches(
-      /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.]*)*\/?$/,
-      { message: 'Enter a valid URL', excludeEmptyString: true }
+  title: Yup.string()
+    .required('Title is required'),
+  shortDesc: Yup.string()
+    .required('Short Description is required'),
+  fullDesc: Yup.string()
+    .required('Full Description is required'),
+  image: Yup.mixed().when('isEdit', {
+    is: false, // Add mode
+    then: (schema) =>
+      schema
+        .required('Image is required')
+        .test('fileType', 'Only image files are allowed (jpeg, jpg, png, gif)', (value) => {
+          if (!value) return false;
+          return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
+        })
+        .test('fileSize', 'File size must be less than 5MB', (value) => {
+          if (!value) return false;
+          return value.size <= 5 * 1024 * 1024; // 5MB limit
+        }),
+    otherwise: (schema) =>
+      schema
+        .nullable() // Edit mode: image is optional
+        .test('fileType', 'Only image files are allowed (jpeg, jpg, png, gif)', (value) => {
+          if (!value) return true; // Allow null
+          return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
+        })
+        .test('fileSize', 'File size must be less than 5MB', (value) => {
+          if (!value) return true; // Allow null
+          return value.size <= 5 * 1024 * 1024; // 5MB limit
+        }),
+  }),
+  points: Yup.array()
+    .of(
+      Yup.object({
+        title: Yup.string(), // Optional, no maxLength
+        description: Yup.string(), // Optional, no maxLength
+      })
     ),
-  image: Yup.mixed()
-    .required('Image is required')
-    .test('fileType', 'Only image files are allowed (jpeg, jpg, png, gif)', (value) => {
-      if (!value) return false; // Image is required
-      return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
-    }),
-  points: Yup.array().of(
-    Yup.object({
-      title: Yup.string().nullable(),
-      description: Yup.string().nullable(),
-    })
-  ).nullable(),
   createdBy: Yup.string().default('admin'),
   updatedBy: Yup.string().default('admin'),
 });
@@ -46,7 +63,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
   useEffect(() => {
     if (editData?.image) {
-      setPreviewImage(editData.image);
+      setPreviewImage(editData.image); // Show existing image
     } else {
       setPreviewImage(null);
     }
@@ -56,11 +73,11 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     title: editData?.title || '',
     shortDesc: editData?.shortDesc || '',
     fullDesc: editData?.fullDesc || '',
-    link: editData?.link || '',
     createdBy: editData?.createdBy || 'admin',
     updatedBy: editData?.updatedBy || 'admin',
     image: null,
-    points: editData?.points || [],
+    points: editData?.points || [], // Initialize with empty array
+    isEdit, // For conditional validation
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
@@ -124,25 +141,11 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                   />
                 </Grid>
 
-                {/* Link */}
-                <Grid item xs={12} sm={6}>
-                  <Field
-                    as={TextField}
-                    name="link"
-                    label="Link"
-                    fullWidth
-                    variant="outlined"
-                    placeholder="e.g., https://example.com"
-                    error={touched.link && Boolean(errors.link)}
-                    helperText={touched.link && errors.link}
-                  />
-                </Grid>
-
                 {/* Image Upload */}
                 <Grid item xs={12} sm={6}>
                   <Box>
                     <Typography variant="body2" sx={{ mb: 1 }}>
-                      Service Image *
+                      Service Image {isEdit ? '' : '*'}
                     </Typography>
                     <input
                       type="file"
@@ -156,6 +159,8 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                             setPreviewImage(reader.result);
                           };
                           reader.readAsDataURL(file);
+                        } else if (isEdit && editData?.image) {
+                          setPreviewImage(editData.image); // Retain existing image
                         } else {
                           setPreviewImage(null);
                         }
@@ -164,7 +169,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                         width: '100%',
                         padding: '10px',
                         border: '1px solid #ccc',
-                        borderRadius: '4px'
+                        borderRadius: '4px',
                       }}
                     />
                     {touched.image && errors.image && (
@@ -177,12 +182,17 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
                 {/* Points */}
                 <Grid item xs={12}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>Points</Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    Points
+                  </Typography>
                   <FieldArray name="points">
                     {({ push, remove }) => (
                       <Box>
                         {values.points?.map((point, index) => (
-                          <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 4 }}>
+                          <Box
+                            key={index}
+                            sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: 4 }}
+                          >
                             <Field
                               as={TextField}
                               name={`points[${index}].title`}
@@ -190,8 +200,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                               fullWidth
                               variant="outlined"
                               sx={{ mb: 1 }}
-                              error={touched.points?.[index]?.title && Boolean(errors.points?.[index]?.title)}
-                              helperText={touched.points?.[index]?.title && errors.points?.[index]?.title}
+                              error={
+                                touched.points?.[index]?.title &&
+                                Boolean(errors.points?.[index]?.title)
+                              }
+                              helperText={
+                                touched.points?.[index]?.title && errors.points?.[index]?.title
+                              }
                             />
                             <Field
                               as={TextField}
@@ -201,8 +216,14 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                               variant="outlined"
                               multiline
                               rows={2}
-                              error={touched.points?.[index]?.description && Boolean(errors.points?.[index]?.description)}
-                              helperText={touched.points?.[index]?.description && errors.points?.[index]?.description}
+                              error={
+                                touched.points?.[index]?.description &&
+                                Boolean(errors.points?.[index]?.description)
+                              }
+                              helperText={
+                                touched.points?.[index]?.description &&
+                                errors.points?.[index]?.description
+                              }
                             />
                             <Button
                               onClick={() => remove(index)}
@@ -241,7 +262,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                           height: 100,
                           objectFit: 'cover',
                           borderRadius: 4,
-                          border: '1px solid #ccc'
+                          border: '1px solid #ccc',
                         }}
                       />
                     </Box>

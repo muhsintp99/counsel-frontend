@@ -26,7 +26,6 @@ const gallerySlice = createSlice({
     getGalleriesSuccess: (state, action) => {
       state.loading = false;
       if (Array.isArray(action.payload)) {
-        console.warn('Received array payload, expected { data, total }:', action.payload);
         state.galleries = action.payload;
         state.galleryCount = action.payload.length || 0;
       } else {

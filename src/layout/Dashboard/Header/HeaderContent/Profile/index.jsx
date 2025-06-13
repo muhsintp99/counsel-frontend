@@ -38,6 +38,8 @@ export default function Profile() {
   const lname = adminUser?.user?.lname || '';
   const userType = adminUser?.user?.userType || '';
   const image = adminUser?.user?.image ? `${config.configApi}/${adminUser.user.image}` : avatar1;
+
+  console.log('Profile image URL:', image);
   const normalizedPicture = image.replace(/([^:]\/)\/+/g, "$1");
 
   const handleToggle = () => {
@@ -55,7 +57,7 @@ export default function Profile() {
     localStorage.removeItem('adminUser');
     localStorage.removeItem('adminToken');
     // window.location.href = '/login';
-    navigate('/login');
+    // navigate('/login');
   };
 
   return (

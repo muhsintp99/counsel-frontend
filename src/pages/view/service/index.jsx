@@ -92,7 +92,6 @@ const { services, serviceCount, selectedService, loading, error } = useSelector(
       title: values.title || '',
       shortDesc: values.shortDesc || '',
       fullDesc: values.fullDesc || '',
-      link: values.link || '',
       createdBy: values.createdBy || 'admin',
       updatedBy: values.updatedBy || 'admin',
       image: values.image,
@@ -121,7 +120,6 @@ const rows = useMemo(() => {
           (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.shortDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.fullDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.link || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.points?.some(
             (point) =>
               point && 
@@ -166,7 +164,7 @@ const rows = useMemo(() => {
       headerName: 'Points',
       flex: 1,
       renderCell: (params) => (
-        <Typography>{params.value?.length || 0} Points</Typography>
+        <Typography style={{ lineHeight: 3.50 }}>{params.value?.length || 0} Points</Typography>
       ),
     },
     {

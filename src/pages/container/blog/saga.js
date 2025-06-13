@@ -63,6 +63,7 @@ function* addBlogSaga(action) {
     };
     const response = yield call(commonApi, params);
     yield put(actions.addBlogSuccess(response.data));
+    yield put(actions.getBlog());
     toast.success('Blog added successfully');
   } catch (error) {
     yield put(actions.addBlogFail(error.message));
@@ -90,10 +91,13 @@ function* updateBlogSaga(action) {
       authorization: 'Bearer',
     };
     const response = yield call(commonApi, params);
+
     yield put(actions.updateBlogSuccess(response.data));
+    yield put(actions.getBlog());
     toast.success('Blog updated successfully');
   } catch (error) {
-    yield put(actions.updateBlogFail(error.message));
+    console.error('updateBlogSaga error:', error);
+    yield put(actions.updateBlogFail(error.message || 'Failed to update blog'));
     toast.error(error.message || 'Failed to update blog');
   }
 }
@@ -108,6 +112,7 @@ function* softDeleteBlogSaga(action) {
     };
     const response = yield call(commonApi, params);
     yield put(actions.deleteBlogSuccess(action.payload));
+    yield put(actions.getBlog());
     toast.success('Blog soft deleted successfully');
   } catch (error) {
     yield put(actions.deleteBlogFail(error.message));
@@ -125,6 +130,7 @@ function* hardDeleteBlogSaga(action) {
     };
     const response = yield call(commonApi, params);
     yield put(actions.deleteBlogSuccess(action.payload));
+    yield put(actions.getBlog());
     toast.success('Blog permanently deleted successfully');
   } catch (error) {
     yield put(actions.deleteBlogFail(error.message));

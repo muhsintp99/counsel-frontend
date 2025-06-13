@@ -29,7 +29,7 @@ const statusMap = {
 
 export default function EnquiriesTable() {
   const dispatch = useDispatch();
-  const { enquiries} = useSelector((state) => state.enquiries);
+  const { enquiries } = useSelector((state) => state.enquiries);
 
   useEffect(() => {
     dispatch(getEnquiries());
@@ -51,8 +51,8 @@ export default function EnquiriesTable() {
           </TableHead>
           <TableBody>
             {enquiries?.length > 0 ? (
-              enquiries.slice(0, 7).map((enq) => (
-                <TableRow key={enq.id}>
+              enquiries.slice(0, 7).map((enq, index) => (
+                <TableRow key={enq.enqNo || index}>
                   <TableCell>{enq.enqNo}</TableCell>
                   <TableCell>{enq.fName}</TableCell>
                   <TableCell>{enq.mobile}</TableCell>
@@ -61,6 +61,7 @@ export default function EnquiriesTable() {
                   <TableCell>{enq.location}</TableCell>
                 </TableRow>
               ))
+
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center">

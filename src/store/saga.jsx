@@ -4,7 +4,7 @@ import LoginActionWatcher from '../container/LoginContainer/saga';
 import CountrySagaWatcher from '../pages/container/country/saga';
 import GalleryActionWatcher from '../pages/container/gallery/saga';
 import BlogActionWatcher from '../pages/container/blog/saga';
-import ServiceActionWatcher from '../pages/container/service/saga';
+import serviceWatcherSaga from '../pages/container/service/saga';
 import EnquiryWatcher from '../pages/container/enquries/saga';
 import followUpWatcher from '../pages/container/follow-up/saga';
 import ContactActionWatcher from '../pages/container/contact/saga';
@@ -18,7 +18,7 @@ function* rootSaga() {
     call(CountrySagaWatcher),
     call(GalleryActionWatcher),
     call(BlogActionWatcher),
-    call(ServiceActionWatcher),
+    call(serviceWatcherSaga),
     call(EnquiryWatcher),
     call(followUpWatcher),
     call(ContactActionWatcher),

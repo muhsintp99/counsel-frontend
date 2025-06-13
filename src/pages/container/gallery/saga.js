@@ -42,6 +42,7 @@ function* getGalleryByIdSaga(action) {
 }
 
 // ADD Gallery Item
+// ADD Gallery Item
 function* addGallerySaga(action) {
   try {
     const { title, from, link, image, date } = action.payload;
@@ -49,7 +50,7 @@ function* addGallerySaga(action) {
     formData.append('title', title || '');
     formData.append('from', from || '');
     formData.append('link', link || '');
-    if (date) formData.append('date', date);
+    formData.append('date', date || new Date().toISOString());
     if (image) formData.append('image', image);
 
     const params = {

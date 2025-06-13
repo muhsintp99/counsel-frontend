@@ -7,10 +7,10 @@ import {
   Paper, 
   Grid, 
   Divider,
-  Button,
+  // Button,
   Container
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+// import EditIcon from '@mui/icons-material/Edit';
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -34,13 +34,13 @@ const Profile = () => {
       <Paper elevation={3} sx={{ p: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4">User Profile</Typography>
-          <Button 
+          {/* <Button 
             variant="contained" 
             startIcon={<EditIcon />}
             onClick={() => navigate('/profile/edit')}
           >
             Edit Profile
-          </Button>
+          </Button> */}
         </Box>
 
         <Grid container spacing={4}>

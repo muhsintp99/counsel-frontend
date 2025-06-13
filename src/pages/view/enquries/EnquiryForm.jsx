@@ -475,7 +475,7 @@ const EnquiryForm = () => {
                         <TextField
                           select
                           name="leadQuality"
-                          label="Lead Quality"
+                          label="Take Your Lead Priority"
                           value={values.leadQuality}
                           onChange={handleChange}
                           error={touched.leadQuality && Boolean(errors.leadQuality)}

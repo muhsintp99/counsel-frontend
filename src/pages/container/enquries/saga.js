@@ -30,7 +30,7 @@ function* getEnquiryByIdSaga(action) {
     yield put(actions.getEnquiryByIdSuccess(response));
   } catch (error) {
     yield put(actions.enquiryFailure(error.message));
-    toast.error(error.message || 'Failed to fetch enquiry');
+    // toast.error(error.message || 'Failed to fetch enquiry');
   }
 }
 
@@ -57,14 +57,14 @@ function* updateEnquirySaga(action) {
   try {
     const { id, data } = action.payload;
     const params = {
-      api: `${config.configApi}/enquiries/${id}`,
+      api: `${config.configApi}/enquiries/status/${id}`,
       method: 'PUT',
       body: data,
     };
     const response = yield call(commonApi, params);
     yield put(actions.updateEnquirySuccess(response));
     yield put(actions.getEnquiries());
-    toast.success('Enquiry updated successfully');
+    // toast.success('Enquiry status updated successfully');
   } catch (error) {
     yield put(actions.enquiryFailure(error.message));
     toast.error(error.message || 'Failed to update enquiry');
@@ -99,7 +99,22 @@ function* getEnquiryCountSaga() {
     yield put(actions.getEnquiryCountSuccess({ count: response.enquiry }));
   } catch (error) {
     yield put(actions.enquiryFailure(error.message));
-    toast.error(error.message || 'Failed to get enquiry count');
+    // toast.error(error.message || 'Failed to get enquiry count');
+  }
+}
+
+// GET New Enquiry Count
+function* getNewEnquiryCountSaga() {
+  try {
+    const params = {
+      api: `${config.configApi}/enquiries/new/count`,
+      method: 'GET',
+    };
+    const response = yield call(commonApi, params);
+    yield put(actions.getNewEnquiryCountSuccess(response));
+  } catch (error) {
+    yield put(actions.enquiryFailure(error.message));
+    // toast.error(error.message || 'Failed to get new enquiry count');
   }
 }
 
@@ -111,4 +126,5 @@ export default function* EnquiryWatcher() {
   yield takeEvery('enquiries/updateEnquiry', updateEnquirySaga);
   yield takeEvery('enquiries/deleteEnquiry', deleteEnquirySaga);
   yield takeEvery('enquiries/getEnquiryCount', getEnquiryCountSaga);
+  yield takeEvery('enquiries/getNewEnquiryCount', getNewEnquiryCountSaga);
 }

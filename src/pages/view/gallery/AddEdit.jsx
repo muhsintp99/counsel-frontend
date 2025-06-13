@@ -23,7 +23,7 @@ const validationSchema = Yup.object({
       /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.]*)*\/?$/,
       { message: 'Enter a valid URL', excludeEmptyString: true }
     ),
-  date: Yup.date().nullable().typeError('Invalid date format'),
+  date: Yup.date().typeError('Invalid date format'),
   image: Yup.mixed().nullable()
     .test('fileType', 'Only image files are allowed', (value) => {
       if (!value) return true; // Allow null/undefined
@@ -47,7 +47,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     title: editData?.title || '',
     from: editData?.from || '',
     link: editData?.link || '',
-    date: editData?.date ? new Date(editData.date).toISOString().split('T')[0] : '',
+    date: editData?.date ? new Date(editData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     image: null
   };
 

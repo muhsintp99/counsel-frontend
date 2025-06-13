@@ -69,11 +69,16 @@ const blogSlice = createSlice({
     updateBlogSuccess: (state, action) => {
       state.loading = false;
       const updated = action.payload;
-      state.blogs = state.blogs.map((item) =>
-        item._id === updated._id ? updated : item
-      );
-      if (state.selectedBlog?._id === updated._id) {
-        state.selectedBlog = updated;
+      if (updated && updated._id) {
+        state.blogs = state.blogs.map((item) =>
+          item._id === updated._id ? updated : item
+        );
+        if (state.selectedBlog?._id === updated._id) {
+          state.selectedBlog = updated;
+        }
+      } else {
+        console.warn('Invalid updateBlogSuccess payload:', updated);
+        state.error = 'Invalid blog update data received';
       }
     },
     updateBlogFail: (state, action) => {

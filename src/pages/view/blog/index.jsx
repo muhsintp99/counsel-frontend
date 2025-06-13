@@ -86,6 +86,7 @@ const Index = () => {
   };
 
   const handleSubmitForm = (values) => {
+    console.log('Submitting form with values:', values);
     const payload = {
       title: values.title || '',
       shortDesc: values.shortDesc || '',
@@ -97,8 +98,10 @@ const Index = () => {
     };
 
     if (editData && editData._id) {
+      console.log('Updating blog with payload:', { id: editData._id, data: payload });
       dispatch(updateBlog({ id: editData._id, data: payload }));
     } else {
+      console.log('Adding blog with payload:', payload);
       dispatch(addBlog(payload));
     }
     setOpenDialog(false);
@@ -106,21 +109,25 @@ const Index = () => {
   };
 
   const rows = useMemo(() => {
-    const validBlogs = Array.isArray(blogs) ? blogs : [];
+    const validBlogs = Array.isArray(blogs) ? blogs.filter(item => item && typeof item === 'object' && item.title) : [];
     if (!Array.isArray(blogs)) {
       console.warn('Redux state.blogs is not an array:', blogs);
     }
     return validBlogs
       .filter(
         (item) =>
-          (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.shortDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.fullDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.link || '').toLowerCase().includes(searchQuery.toLowerCase())
+          item &&
+          typeof item === 'object' &&
+          (
+            (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.shortDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.fullDesc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.link || '').toLowerCase().includes(searchQuery.toLowerCase())
+          )
       )
       .map((item, index) => ({
         ...item,
-        id: index + 1 || item._id || '',
+        id: index + 1 || item._id,
       }));
   }, [blogs, searchQuery]);
 
