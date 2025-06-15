@@ -51,7 +51,7 @@ export default function EnquiriesTable() {
           </TableHead>
           <TableBody>
             {enquiries?.length > 0 ? (
-              enquiries.slice(0, 7).map((enq, index) => (
+              enquiries.slice(0, 5).map((enq, index) => (
                 <TableRow key={enq.enqNo || index}>
                   <TableCell>{enq.enqNo}</TableCell>
                   <TableCell>{enq.fName}</TableCell>
