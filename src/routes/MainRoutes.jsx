@@ -23,9 +23,9 @@ const Intake = Loadable(lazy(() => import('../pages/view/intake/index')));
 const Course = Loadable(lazy(() => import('../pages/view/courses/index')));
 
 // render - Utitlite
-const Services = Loadable(lazy(() => import('../pages/view/service/index')));
+// const Services = Loadable(lazy(() => import('../pages/view/service/index')));
 const Blog = Loadable(lazy(() => import('../pages/view/blog/index')));
-const Gallery = Loadable(lazy(() => import('../pages/view/gallery/index')));
+// const Gallery = Loadable(lazy(() => import('../pages/view/gallery/index')));
 
 // render - Support
 const MyTeam = Loadable(lazy(() => import('../pages/view/support/index')));
@@ -95,18 +95,18 @@ const MainRoutes = {
 
     // ----------Services----
 
-    {
-      path: 'services',
-      element: <Services />
-    },
+    // {
+    //   path: 'services',
+    //   element: <Services />
+    // },
     {
       path: 'blog',
       element: <Blog />
     },
-    {
-      path: 'gallery',
-      element: <Gallery />
-    },
+    // {
+    //   path: 'gallery',
+    //   element: <Gallery />
+    // },
 
     // ----------Support----
 

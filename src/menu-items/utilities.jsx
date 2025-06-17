@@ -14,13 +14,13 @@ const utilities = {
   title: 'Utilities',
   type: 'group',
   children: [
-    {
-      id: 'services',
-      title: 'Services',
-      type: 'item',
-      url: '/services',
-      icon: icons.Assignment
-    },
+    // {
+    //   id: 'services',
+    //   title: 'Services',
+    //   type: 'item',
+    //   url: '/services',
+    //   icon: icons.Assignment
+    // },
     {
       id: 'blog',
       title: 'Blog',
@@ -28,13 +28,13 @@ const utilities = {
       url: '/blog',
       icon: icons.SpaceDashboard
     },
-    {
-      id: 'gallery',
-      title: 'Gallery',
-      type: 'item',
-      url: '/gallery',
-      icon: icons.Collections
-    }
+    // {
+    //   id: 'gallery',
+    //   title: 'Gallery',
+    //   type: 'item',
+    //   url: '/gallery',
+    //   icon: icons.Collections
+    // }
   ]
 };
 
