@@ -129,6 +129,8 @@ const Index = () => {
     },
   ];
 
+
+
   return (
     <Box sx={pageStyles.mainBox}>
       <Typography variant="h4" sx={pageStyles.title}>{title}</Typography>

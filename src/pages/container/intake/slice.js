@@ -4,6 +4,8 @@ const intakeSlice = createSlice({
   name: 'intakes',
   initialState: {
     intakes: [],
+    domesticIntakes: [],
+    internationalIntakes: [],
     selectedIntake: {},
     intakeCount: 0,
     loading: false,
@@ -39,6 +41,37 @@ const intakeSlice = createSlice({
       state.loading = false;
       state.error = action.payload || 'Failed to fetch intakes';
     },
+
+    // Get Domestic Intakes
+    getDomesticIntakes: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getDomesticIntakesSuccess: (state, action) => {
+      state.loading = false;
+      state.domesticIntakes = action.payload || [];
+      state.error = null;
+    },
+    getDomesticIntakesFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload || 'Failed to fetch domestic intakes';
+    },
+
+    // Get International Intakes
+    getInternationalIntakes: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getInternationalIntakesSuccess: (state, action) => {
+      state.loading = false;
+      state.internationalIntakes = action.payload || [];
+      state.error = null;
+    },
+    getInternationalIntakesFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload || 'Failed to fetch international intakes';
+    },
+
 
     // Get intake by ID
     getIntakeById: (state) => {
@@ -172,27 +205,43 @@ export const {
   addIntake,
   addIntakeSuccess,
   addIntakeFail,
+
   getIntakes,
   getIntakesSuccess,
   getIntakesFail,
+
+  getDomesticIntakes,
+  getDomesticIntakesSuccess,
+  getDomesticIntakesFail,
+
+  getInternationalIntakes,
+  getInternationalIntakesSuccess,
+  getInternationalIntakesFail,
+
   getIntakeById,
   getIntakeByIdSuccess,
   getIntakeByIdFail,
+
   totalCount,
   totalCountSuccess,
   totalCountFail,
+
   updateIntake,
   updateIntakeSuccess,
   updateIntakeFail,
+
   deleteIntake,
   deleteIntakeSuccess,
   deleteIntakeFail,
+
   hardDeleteIntake,
   hardDeleteIntakeSuccess,
   hardDeleteIntakeFail,
+
   deleteAllIntakes,
   deleteAllIntakesSuccess,
   deleteAllIntakesFail,
+
   resetError,
   resetState,
 } = intakeSlice.actions;

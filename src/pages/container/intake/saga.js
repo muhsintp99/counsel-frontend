@@ -23,6 +23,41 @@ function* getIntakesSaga() {
   }
 }
 
+// GET Domestic Intakes
+function* getDomesticIntakesSaga() {
+  try {
+    const params = {
+      api: `${config.configApi}/intake?domestic=true`,
+      method: 'GET',
+      authorization: 'Bearer',
+    };
+    const response = yield call(commonApi, params);
+    yield put(actions.getDomesticIntakesSuccess(response.data || []));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to load domestic intakes';
+    yield put(actions.getDomesticIntakesFail(errorMessage));
+    toast.error(errorMessage);
+  }
+}
+
+// GET International Intakes
+function* getInternationalIntakesSaga() {
+  try {
+    const params = {
+      api: `${config.configApi}/intake?domestic=false`,
+      method: 'GET',
+      authorization: 'Bearer',
+    };
+    const response = yield call(commonApi, params);
+    yield put(actions.getInternationalIntakesSuccess(response.data || []));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to load international intakes';
+    yield put(actions.getInternationalIntakesFail(errorMessage));
+    toast.error(errorMessage);
+  }
+}
+
+
 // GET Intake By ID
 function* getIntakeByIdSaga(action) {
   try {
@@ -46,7 +81,7 @@ function* getIntakeByIdSaga(action) {
 function* addIntakeSaga(action) {
   try {
     console.log('Add Intake Payload:', action.payload);
-    const { college, intakeMonth, intakeYear, deadlineDate, status, visible } = action.payload;
+    const { college, intakeMonth, intakeYear, deadlineDate, status, visible,isDomestic } = action.payload;
     const payload = {
       college,
       intakeMonth,
@@ -54,6 +89,7 @@ function* addIntakeSaga(action) {
       deadlineDate,
       status: status || 'open',
       visible: visible !== undefined ? visible : true,
+      isDomestic,
     };
 
     const params = {
@@ -188,6 +224,8 @@ function* totalCountSaga() {
 
 export default function* IntakeActionWatcher() {
   yield takeEvery('intakes/getIntakes', getIntakesSaga);
+  yield takeEvery('intakes/getDomesticIntakes', getDomesticIntakesSaga);
+  yield takeEvery('intakes/getInternationalIntakes', getInternationalIntakesSaga);
   yield takeEvery('intakes/totalCount', totalCountSaga);
   yield takeEvery('intakes/addIntake', addIntakeSaga);
   yield takeEvery('intakes/getIntakeById', getIntakeByIdSaga);

@@ -18,9 +18,13 @@ const FollowUp = Loadable(lazy(() => import('../pages/view/follow-up/index')));
 const Contact = Loadable(lazy(() => import('../pages/view/contact/index')));
 
 // render - colleges
-const Collegs = Loadable(lazy(() => import('../pages/view/colleges/index')));
-const Intake = Loadable(lazy(() => import('../pages/view/intake/index')));
-const Course = Loadable(lazy(() => import('../pages/view/courses/index')));
+const InternationalCollegs = Loadable(lazy(() => import('../pages/view/colleges/international/index')));
+const InternationalIntake = Loadable(lazy(() => import('../pages/view/intake/index')));
+const InternationalCourse = Loadable(lazy(() => import('../pages/view/courses/index')));
+
+const DomesticCollegs = Loadable(lazy(() => import('../pages/view/colleges/domestic/index')));
+const DomesticIntake = Loadable(lazy(() => import('../pages/view/dom-intake/index')));
+const DomesticCourse = Loadable(lazy(() => import('../pages/view/dom-courses/index')));
 
 // render - Utitlite
 // const Services = Loadable(lazy(() => import('../pages/view/service/index')));
@@ -28,7 +32,7 @@ const Blog = Loadable(lazy(() => import('../pages/view/blog/index')));
 // const Gallery = Loadable(lazy(() => import('../pages/view/gallery/index')));
 
 // render - Support
-const MyTeam = Loadable(lazy(() => import('../pages/view/support/index')));
+const State = Loadable(lazy(() => import('../pages/view/state/index')));
 const Country = Loadable(lazy(() => import('../pages/view/country/index')));
 
 // render - color
@@ -81,16 +85,28 @@ const MainRoutes = {
     // ----------Schools----
 
     {
-      path: 'colleges',
-      element: <Collegs />
+      path: 'domestic-colleges',
+      element: <DomesticCollegs />
     },
     {
-      path: 'intake',
-      element: <Intake />
+      path: 'international-colleges',
+      element: <InternationalCollegs />
     },
     {
-      path: 'course',
-      element: <Course />
+      path: 'domestic-intake',
+      element: <DomesticIntake />
+    },
+    {
+      path: 'international-intake',
+      element: <InternationalIntake />
+    },
+    {
+      path: 'domestic-course',
+      element: <DomesticCourse />
+    },
+    {
+      path: 'international-course',
+      element: <InternationalCourse />
     },
 
     // ----------Services----
@@ -111,8 +127,8 @@ const MainRoutes = {
     // ----------Support----
 
     {
-      path: 'my-team',
-      element: <MyTeam />
+      path: 'state',
+      element: <State />
     },
     {
       path: 'country',

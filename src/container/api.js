@@ -266,16 +266,14 @@
 
 
 import axios from 'axios';
-import { put } from 'redux-saga/effects';
+import { put, delay } from 'redux-saga/effects';
 import config from '../config';
 import { Base64 } from 'js-base64';
 
-function* commonApi(value) {
+function* commonApi(value, retries = 2, delayMs = 1000) {
   try {
-    // Get token from localStorage or config
     const token = localStorage.getItem(config.token) || config.token;
 
-    // Build authorization header
     let authorization = '';
     if (value.authorization === 'Basic') {
       const credentials = `${value.body.email}:${value.body.password}`;
@@ -284,17 +282,14 @@ function* commonApi(value) {
       authorization = `Bearer ${token}`;
     }
 
-    // Check if body is FormData
     const isFormData = value.body instanceof FormData;
 
-    // Configure headers
     const headers = {
       Accept: 'application/json',
       ...(authorization && { Authorization: authorization }),
       ...(!isFormData && { 'Content-Type': 'application/json' }),
     };
 
-    // Axios request config
     const axiosConfig = {
       url: value.api,
       method: value.method.toLowerCase(),
@@ -307,26 +302,27 @@ function* commonApi(value) {
       }),
     };
 
-    console.log('API Request:', axiosConfig);
+    console.log('🔍 API Request:', axiosConfig);
 
-    // Perform API request
     const response = yield axios(axiosConfig);
     const data = response.data;
 
-    console.log('API Response:', data);
+    console.log('✅ API Response:', data);
 
-    // Dispatch success action
     if (value.successAction) {
-      yield put({
-        type: value.successAction.type,
-        payload: data,
-      });
+      yield put({ type: value.successAction.type, payload: data });
     }
 
     return data;
-
   } catch (error) {
     let errorMessage = 'Unknown error';
+    const status = error?.response?.status;
+
+    if (status === 429 && retries > 0) {
+      console.warn(`⏳ Retrying after 429 (Too Many Requests) in ${delayMs}ms...`);
+      yield delay(delayMs);
+      return yield* commonApi(value, retries - 1, delayMs * 2); // exponential backoff
+    }
 
     if (error.response) {
       errorMessage = error.response.data?.message || error.response.data?.error || error.response.statusText;
@@ -334,14 +330,10 @@ function* commonApi(value) {
       errorMessage = error.message;
     }
 
-    console.error('API Error:', errorMessage);
+    console.error('❌ API Error:', errorMessage, '| Status:', status);
 
-    // Dispatch fail action
     if (value.failAction) {
-      yield put({
-        type: value.failAction.type,
-        payload: errorMessage,
-      });
+      yield put({ type: value.failAction.type, payload: errorMessage });
     }
 
     throw new Error(errorMessage);

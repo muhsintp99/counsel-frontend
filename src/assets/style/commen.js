@@ -60,7 +60,7 @@ export const pageStyles = {
         fontWeight: '600'
     },
 
-    buttonIcon:{
+    buttonIcon: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -160,6 +160,9 @@ export const viewDrawerStyles = {
         border: '1px solid #dadada',
         borderRadius: ' 9px',
         padding: "15px 10px"
+    },
+    dataItem: {
+        display: 'flex',
     },
 
     label: {

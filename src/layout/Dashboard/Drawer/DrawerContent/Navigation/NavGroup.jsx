@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
+
 // material-ui
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
@@ -6,22 +8,38 @@ import Box from '@mui/material/Box';
 
 // project import
 import NavItem from './NavItem';
+import NavCollapse from './NavCollapse';
 import { useGetMenuMaster } from 'api/menu';
 
-export default function NavGroup({ item }) {
+export default function NavGroup({ item, drawerToggle }) {
   const { menuMaster } = useGetMenuMaster();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
+
+  // ✅ ADD THIS:
+  const [openCollapseId, setOpenCollapseId] = useState(null);
 
   const navCollapse = item.children?.map((menuItem) => {
     switch (menuItem.type) {
       case 'collapse':
         return (
-          <Typography key={menuItem.id} variant="caption" color="error" sx={{ p: 2.5 }}>
-            collapse - only available in paid version
-          </Typography>
+          <NavCollapse
+            key={menuItem.id}
+            menu={menuItem}
+            level={1}
+            openCollapseId={openCollapseId}
+            setOpenCollapseId={setOpenCollapseId}
+            drawerToggle={drawerToggle}
+          />
         );
       case 'item':
-        return <NavItem key={menuItem.id} item={menuItem} level={1} />;
+        return (
+          <NavItem
+            key={menuItem.id}
+            item={menuItem}
+            level={1}
+            drawerToggle={drawerToggle}
+          />
+        );
       default:
         return (
           <Typography key={menuItem.id} variant="h6" color="error" align="center">
@@ -34,13 +52,11 @@ export default function NavGroup({ item }) {
   return (
     <List
       subheader={
-        item.title &&
-        drawerOpen && (
+        item.title && drawerOpen && (
           <Box sx={{ pl: 3, mb: 1.5 }}>
             <Typography variant="subtitle2" color="textSecondary">
               {item.title}
             </Typography>
-            {/* only available in paid version */}
           </Box>
         )
       }
@@ -51,4 +67,7 @@ export default function NavGroup({ item }) {
   );
 }
 
-NavGroup.propTypes = { item: PropTypes.object };
+NavGroup.propTypes = {
+  item: PropTypes.object,
+  drawerToggle: PropTypes.func
+};

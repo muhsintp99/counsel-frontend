@@ -6,7 +6,7 @@ import {
   updateCollege,
   deleteCollege,
   softDeleteCollege,
-} from '../../container/colleges/slice';
+} from '../../../container/colleges/international/slice';
 import {
   Typography,
   Box,
@@ -26,7 +26,7 @@ import {
 } from '@mui/material';
 import { SearchOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useTheme } from '@mui/material/styles';
-import { pageStyles } from '../../../assets/style/commen';
+import { pageStyles } from '../../../../assets/style/commen';
 import AddEdit from './AddEdit';
 import View from './view';
 
@@ -39,19 +39,19 @@ const Index = () => {
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
 
   const dispatch = useDispatch();
-  const { colleges, loading, error } = useSelector((state) => state.college);
+  const { colleges, loading, error } = useSelector((state) => state.internationalColleges);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const title = 'Colleges';
+  const title = 'International Colleges';
 
   useEffect(() => {
-    console.log('Dispatching getColleges');
-    dispatch(getColleges());
+    console.log('Dispatching getColleges for international');
+    dispatch(getColleges({ domestic: false }));
   }, [dispatch]);
 
   useEffect(() => {
-    console.log('Colleges state updated:', { colleges, loading, error });
+    console.log('International colleges state updated:', { colleges, loading, error });
   }, [colleges, loading, error]);
 
   const handleOpenDialog = (college = null) => {
@@ -104,7 +104,7 @@ const Index = () => {
     const validColleges = Array.isArray(colleges)
       ? colleges.filter((item) => item && typeof item === 'object')
       : [];
-    console.log('Filtered colleges:', validColleges);
+    console.log('Filtered international colleges:', validColleges);
     return validColleges.filter((item) => {
       const search = searchQuery.toLowerCase();
       return (
@@ -163,19 +163,19 @@ const Index = () => {
           onClick={() => handleOpenDialog()}
           sx={{ mt: 2, ml: 2 }}
         >
-          Add College
+          Add International College
         </Button>
       </Box>
 
       {loading && (
         <Typography variant="body2" sx={{ mt: 2 }}>
-          Loading colleges...
+          Loading international colleges...
         </Typography>
       )}
 
       {!loading && filteredColleges.length === 0 && (
         <Typography variant="body2" sx={{ mt: 2 }}>
-          No colleges found.
+          No international colleges found.
         </Typography>
       )}
 
@@ -190,7 +190,7 @@ const Index = () => {
                 </Typography>
               </CardContent>
               <CardMedia
-                sx={{ height: 140 ,padding:'0px 10px'}}
+                sx={{ height: 140, padding: '0px 10px' }}
                 image={college.image}
                 component="img"
                 title="College Image"
@@ -256,7 +256,7 @@ const Index = () => {
       <Dialog open={deleteDialog.open} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <Typography>Do you want to soft delete (mark as deleted) or permanently delete this college?</Typography>
+          <Typography>Do you want to soft delete (mark as deleted) or permanently delete this international college?</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog}>Cancel</Button>

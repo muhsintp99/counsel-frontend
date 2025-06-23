@@ -13,6 +13,7 @@ import {
   FormControl,
   Select,
   Box,
+  Typography,
 } from '@mui/material';
 import { toast } from 'react-toastify';
 
@@ -31,22 +32,13 @@ const AddEdit = ({ open, handleClose, editData, onSubmit }) => {
     syllabus: [],
     prerequisites: [],
     tags: [],
-    isDomestic: false,
+    image: null,
+    isDomestic: true,
   });
-
   const [inputSyllabus, setInputSyllabus] = useState('');
   const [inputPrerequisites, setInputPrerequisites] = useState('');
   const [inputTags, setInputTags] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
-
-  // Handle text & select input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'isDomestic' ? value === 'true' : value,
-    }));
-  };
 
   useEffect(() => {
     if (editData) {
@@ -71,7 +63,8 @@ const AddEdit = ({ open, handleClose, editData, onSubmit }) => {
         syllabus: [],
         prerequisites: [],
         tags: [],
-        isDomestic: false,
+        image: null,
+        isDomestic: true,
       });
       setInputSyllabus('');
       setInputPrerequisites('');
@@ -79,12 +72,35 @@ const AddEdit = ({ open, handleClose, editData, onSubmit }) => {
       setImagePreview(null);
     }
 
+    // Cleanup image preview URL
     return () => {
-      if (imagePreview && typeof imagePreview === 'string') {
+      if (imagePreview) {
         URL.revokeObjectURL(imagePreview);
       }
     };
-  }, [editData]);
+  }, [editData, imagePreview]);
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'image' && files && files[0]) {
+      if (files[0].size > 5 * 1024 * 1024) {
+        toast.error('Image size must be less than 5MB');
+        return;
+      }
+      if (!files[0].type.match('image/*')) {
+        toast.error('Only image files are allowed');
+        return;
+      }
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+      setImagePreview(URL.createObjectURL(files[0]));
+    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : name === 'isDomestic' ? value === 'true' : value,
+    }));
+  };
 
   const handleArrayInputChange = (e, field) => {
     const { value } = e.target;
@@ -94,11 +110,10 @@ const AddEdit = ({ open, handleClose, editData, onSubmit }) => {
   };
 
   const handleAddToArray = (field) => {
-    const newItem = {
-      syllabus: inputSyllabus,
-      prerequisites: inputPrerequisites,
-      tags: inputTags,
-    }[field]?.trim();
+    let newItem;
+    if (field === 'syllabus') newItem = inputSyllabus.trim();
+    else if (field === 'prerequisites') newItem = inputPrerequisites.trim();
+    else if (field === 'tags') newItem = inputTags.trim();
 
     if (newItem) {
       const exists = formData[field].some(
@@ -152,19 +167,15 @@ const AddEdit = ({ open, handleClose, editData, onSubmit }) => {
       return;
     }
 
-    const finalData = {
-      ...formData,
-      category: formData.category === 'other' ? formData.customCategory : formData.category,
-    };
-
-    onSubmit(finalData);
+    const categoryToSave =
+      formData.category === 'other' ? formData.customCategory : formData.category;
+    onSubmit({ ...formData, category: categoryToSave });
     handleClose();
   };
 
-
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogTitle>{editData ? 'Edit international Course' : 'Add international Course'}</DialogTitle>
+      <DialogTitle>{editData ? 'Edit Domestic Course' : 'Add Domestic Course'}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ paddingTop: 2 }}>
           <Grid item xs={12}>

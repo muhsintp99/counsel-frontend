@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   TextField,
   Button,
@@ -24,14 +25,15 @@ import School from '@mui/icons-material/School';
 import LocationOn from '@mui/icons-material/LocationOn';
 import Message from '@mui/icons-material/Message';
 import { createEnquiry } from '../../container/enquries/slice';
-import { getCourse } from '../../container/courses/slice';
-import { getColleges } from '../../container/colleges/slice';
+import { getAllCourses } from '../../container/courses/slice';
+import { getAllColleges } from '../../container/colleges/domestic/slice';
 
 const EnquiryForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading: enquiryLoading, error: enquiryError } = useSelector((state) => state.enquiries);
-  const { courses, loading: coursesLoading, error: coursesError } = useSelector((state) => state.courses);
-  const { colleges, loading: collegesLoading, error: collegesError } = useSelector((state) => state.college);
+  const { allCourses : courses, loading: coursesLoading, error: coursesError } = useSelector((state) => state.courses);
+  const { colleges, loading: collegesLoading, error: collegesError } = useSelector((state) => state.domesticColleges);
 
   // Define categories based on the provided schema
   const categories = [
@@ -44,8 +46,8 @@ const EnquiryForm = () => {
 
   useEffect(() => {
     // Fetch courses and colleges when component mounts
-    dispatch(getCourse());
-    dispatch(getColleges());
+    dispatch(getAllCourses());
+    dispatch(getAllColleges());
   }, [dispatch]);
 
   useEffect(() => {
@@ -96,18 +98,33 @@ const EnquiryForm = () => {
     setFieldValue('course', '');
   };
 
-  const handleSubmit = async (values, { resetForm, setSubmitting }) => {
-    try {
-      await dispatch(createEnquiry(values));
-      // toast.success('Enquiry submitted successfully');
-      resetForm();
-    } catch (err) {
-      console.error('Submit error:', err);
-      toast.error(err.message || 'Error submitting enquiry');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // const handleSubmit = async (values, { resetForm, setSubmitting }) => {
+  //   try {
+  //     await dispatch(createEnquiry(values));
+  //     // toast.success('Enquiry submitted successfully');
+  //     resetForm();
+  //   } catch (err) {
+  //     console.error('Submit error:', err);
+  //     toast.error(err.message || 'Error submitting enquiry');
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
+
+const handleSubmit = async (values, { resetForm, setSubmitting }) => {
+  try {
+    await dispatch(createEnquiry(values)); // remove unwrap
+    toast.success('Enquiry submitted successfully');
+    resetForm();
+    navigate('/thank-you');
+  } catch (err) {
+    console.error('Submit error:', err);
+    const errorMessage = err.message || 'Error submitting enquiry';
+    toast.error(errorMessage);
+    setSubmitting(false);
+  }
+};
+
 
   if (enquiryLoading || coursesLoading || collegesLoading) {
     return <CircularProgress style={{ display: 'block', margin: 'auto',justifyContent:'center',alignItems:'center' }} />;

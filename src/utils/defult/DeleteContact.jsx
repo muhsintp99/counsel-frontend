@@ -76,7 +76,7 @@ const DeleteContact = ({ open, onClose, data, onConfirm, message }) => {
           {message || (
             <>
               Are you sure you want to delete{' '}
-              <strong>{data?.name || 'this contact'}</strong>? This action cannot be undone.
+              <strong>{data === 'ALL' ? 'ALL contacts' : data?.fullname || 'this contact'}</strong>
             </>
           )}
         </DialogContentText>

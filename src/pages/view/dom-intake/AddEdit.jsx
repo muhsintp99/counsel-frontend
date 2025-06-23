@@ -8,13 +8,19 @@ import {
   Button,
   Grid,
   MenuItem,
+  FormControlLabel,
+  Checkbox,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getColleges } from '../../container/colleges/international/slice'; // adjust path if needed
+import { getColleges } from '../../container/colleges/domestic/slice';
 
+// Validation schema
 const validationSchema = Yup.object({
   college: Yup.string()
     .required('College is required')
@@ -25,15 +31,19 @@ const validationSchema = Yup.object({
     .min(new Date().getFullYear(), 'Intake year cannot be in the past'),
   deadlineDate: Yup.date()
     .required('Deadline date is required')
-    .min(new Date().toISOString().split('T')[0], 'Deadline cannot be in the past'),
-  status: Yup.string().oneOf(['open', 'closed']).required('Status is required'),
+    .min(new Date().toISOString().split('T')[0], 'Deadline date cannot be in the past'),
+  status: Yup.string()
+    .oneOf(['open', 'closed'])
+    .required('Status is required'),
 });
 
 const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   const dispatch = useDispatch();
-  const { colleges, loading, error } = useSelector((state) => state.internationalColleges || { colleges: [], loading: false, error: '' });
+  const { colleges, loading, error } = useSelector(
+    (state) => state.domesticColleges || { colleges: [], loading: false, error: '' }
+  );
 
-  const isEdit = Boolean(editData?._id);
+  const isEdit = Boolean(editData && editData._id);
 
   useEffect(() => {
     if (open) {
@@ -49,25 +59,38 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
       ? new Date(editData.deadlineDate).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
     status: editData?.status || 'open',
-    isDomestic: false,
+    isDomestic: true,
   };
 
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
+    console.log('Submitting form with values:', values);
+    // Ensure status is consistent with deadline
+    const deadline = new Date(values.deadlineDate);
+    const today = new Date();
+    if (deadline < today && values.status === 'open') {
+      console.warn('Warning: Setting status to open for a past deadline');
+    }
     onSubmit(values);
     setSubmitting(false);
     resetForm();
+  };
+
+  const handleClose = () => {
+    onClose();
   };
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
+
   const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
+
   const statuses = ['open', 'closed'];
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit International Intake' : 'Add International Intake'}</DialogTitle>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>{isEdit ? 'Edit Domestic Intake' : 'Add New Domestic Intake'}</DialogTitle>
 
       <Formik
         initialValues={initialValues}
@@ -75,7 +98,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {({ values, errors, touched, isSubmitting }) => (
+        {({ values, errors, touched, setFieldValue, isSubmitting }) => (
           <Form>
             <DialogContent>
               <Grid container spacing={3}>
@@ -101,6 +124,16 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                       <MenuItem disabled>No colleges available</MenuItem>
                     )}
                   </Field>
+                  {loading && (
+                    <Typography variant="caption" color="textSecondary">
+                      Loading colleges...
+                    </Typography>
+                  )}
+                  {error && (
+                    <Typography variant="caption" color="error">
+                      Failed to load colleges: {error}
+                    </Typography>
+                  )}
                 </Grid>
 
                 {/* Intake Month */}
@@ -168,7 +201,12 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     fullWidth
                     variant="outlined"
                     error={touched.status && Boolean(errors.status)}
-                    helperText={touched.status && errors.status}
+                    helperText={
+                      (touched.status && errors.status) ||
+                      (new Date(values.deadlineDate) < new Date() && values.status === 'open'
+                        ? 'Warning: Status is open but deadline has passed'
+                        : '')
+                    }
                   >
                     {statuses.map((status) => (
                       <MenuItem key={status} value={status}>
@@ -178,27 +216,53 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                   </Field>
                 </Grid>
 
-                {/* isDomestic (disabled) */}
                 <Grid item xs={12} sm={6}>
-                  <Field
-                    as={TextField}
-                    select
-                    name="isDomestic"
-                    label="Domestic"
-                    fullWidth
-                    variant="outlined"
-                  disabled
-                  >
-                    <MenuItem value={true}>Yes</MenuItem>
-                    <MenuItem value={false}>No</MenuItem>
-                  </Field>
+                  {/* <FormControl fullWidth required>
+                    <InputLabel id="domestic-label">Domestic</InputLabel>
+                    <Select
+                      labelId="domestic-label"
+                      name="isDomestic"
+                      label="Domestic"
+                      value={values.isDomestic ? 'Yes' : 'No'}
+                      disabled
+                      aria-label="Domestic status"
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                  </FormControl> */}
+
+                  <Grid item xs={12} sm={6}>
+                    <Field
+                      as={TextField}
+                      select
+                      name="isDomestic"
+                      label="Domestic"
+                      fullWidth
+                      variant="outlined"
+                      disabled
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Field>
+                  </Grid>
+
                 </Grid>
+
+
               </Grid>
             </DialogContent>
 
             <DialogActions sx={{ p: 3 }}>
-              <Button onClick={onClose} variant="outlined">Cancel</Button>
-              <Button type="submit" variant="contained" disabled={isSubmitting || colleges.length === 0}>
+              <Button onClick={handleClose} variant="outlined">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={isSubmitting || colleges.length === 0}
+                sx={{ ml: 2 }}
+              >
                 {isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Add'}
               </Button>
             </DialogActions>

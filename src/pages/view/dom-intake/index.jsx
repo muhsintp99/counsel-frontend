@@ -4,7 +4,7 @@ import {
   addIntake,
   deleteIntake,
   getIntakes,
-  getInternationalIntakes,
+  getDomesticIntakes,
   updateIntake,
   resetError,
 } from '../../container/intake/slice';
@@ -46,11 +46,11 @@ const Index = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const title = "International Intakes";
+  const title = "Domestic Intakes";
 
   useEffect(() => {
     dispatch(getIntakes());
-    dispatch(getInternationalIntakes());
+    dispatch(getDomesticIntakes());
 
   }, [dispatch]);
 
@@ -97,10 +97,10 @@ const Index = () => {
       intakeYear: values.intakeYear,
       deadlineDate: values.deadlineDate,
       status: values.status,
-      isDomestic: false,
+      isDomestic: true,
     };
     if (editData?._id) {
-      dispatch(updateIntake({ id: editData._id, ...payload, isDomestic: false, }));
+      dispatch(updateIntake({ id: editData._id, ...payload, isDomestic: true, }));
     } else {
       dispatch(addIntake(payload));
     }
@@ -111,7 +111,7 @@ const Index = () => {
   const rows = useMemo(() => {
     // const validIntakes = Array.isArray(domesticIntakes) ? domesticIntakes : [];
     const validIntakes = Array.isArray(intakes)
-      ? intakes.filter((item) => item.isDomestic === false)
+      ? intakes.filter((item) => item.isDomestic === true)
       : [];
 
     if (!Array.isArray(intakes)) {
@@ -250,13 +250,13 @@ const Index = () => {
 
       {loading && (
         <Typography variant="body2" sx={{ mt: 2 }}>
-          Loading International intakes...
+          Loading Domestic intakes...
         </Typography>
       )}
 
       {!loading && rows.length === 0 && (
         <Typography variant="body2" sx={{ mt: 2 }}>
-          No International intakes found.
+          No Domestic intakes found.
         </Typography>
       )}
 

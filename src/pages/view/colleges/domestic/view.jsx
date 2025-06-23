@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import { viewDrawerStyles } from '../../../assets/style/commen';
+import { viewDrawerStyles } from '../../../../assets/style/commen';
 
 const capitalize = (str) => str?.toLowerCase()?.replace(/\b\w/g, (c) => c.toUpperCase()) || '';
 
@@ -36,7 +36,7 @@ const View = ({ open, onClose, data }) => {
             <CloseIcon />
           </IconButton>
           <Grid sx={viewDrawerStyles.headContent}>
-            <Typography sx={viewDrawerStyles.drawerTitle}>College Details</Typography>
+            <Typography sx={viewDrawerStyles.drawerTitle}>International College Details</Typography>
           </Grid>
         </Box>
 
@@ -54,7 +54,6 @@ const View = ({ open, onClose, data }) => {
                   />
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -62,7 +61,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.name)}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -70,7 +68,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.code}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -78,7 +75,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.email || 'N/A'}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -87,7 +83,6 @@ const View = ({ open, onClose, data }) => {
                 </Box>
               </Box>
             </Grid>
-
             <Grid item xs={12} md={6}>
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
@@ -96,7 +91,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.address || 'N/A'}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -104,7 +98,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.website || 'N/A'}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -112,7 +105,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.country?.name || 'N/A'}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -120,7 +112,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.category)}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -128,7 +119,6 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.status)}</Typography>
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -146,8 +136,7 @@ const View = ({ open, onClose, data }) => {
                   )}
                 </Box>
               </Box>
-
-              <Box mb={2} style={{ display: 'flex' }}>
+              {/* <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Facilities</strong></Typography>
@@ -164,7 +153,6 @@ const View = ({ open, onClose, data }) => {
                   )}
                 </Box>
               </Box>
-
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -181,7 +169,7 @@ const View = ({ open, onClose, data }) => {
                     <Typography sx={viewDrawerStyles.value}>No services listed</Typography>
                   )}
                 </Box>
-              </Box>
+              </Box> */}
             </Grid>
           </Grid>
         ) : (

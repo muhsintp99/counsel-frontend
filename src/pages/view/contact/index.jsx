@@ -230,10 +230,11 @@ const Index = () => {
                 message={
                     deleteData === 'ALL'
                         ? 'Are you sure you want to delete ALL contacts?'
-                        : deleteData
-                            ? `Are you sure you want to delete this contact?`
-                            : `Are you sure you want to delete ${Object.keys(rowSelectionModel).length} selected contacts?`
+                        : deleteData?.fullname
+                            ? `Are you sure you want to delete ${deleteData.fullname}?`
+                            : `Are you sure you want to delete ${Object.keys(rowSelectionModel).length} selected contact(s)?`
                 }
+
 
             />
 

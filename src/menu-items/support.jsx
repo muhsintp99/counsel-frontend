@@ -25,6 +25,13 @@ const support = {
     //   icon: icons.Groups
     // },
     {
+      id: 'state',
+      title: 'State',
+      type: 'item',
+      url: '/state',
+      icon: icons.Public
+    },
+    {
       id: 'country',
       title: 'Country',
       type: 'item',

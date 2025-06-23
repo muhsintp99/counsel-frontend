@@ -52,7 +52,7 @@ const Index = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const title = 'International Courses';
+  const title = 'Domestic Courses';
 
   const categoryOptions = [
     { value: '', label: 'All Categories' },
@@ -93,7 +93,7 @@ const Index = () => {
   const filteredCourses = useMemo(() => {
   return (courses || [])
     .filter((course) => {
-      const isDomestic = course?.isDomestic === false;
+      const isDomestic = course?.isDomestic === true; // ✅ Only domestic courses
       const matchesTitle = course?.title?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = categoryFilter
         ? course?.category?.toLowerCase() === categoryFilter.toLowerCase()

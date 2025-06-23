@@ -316,15 +316,10 @@
 //   );
 // }
 
-
-// material-ui
 import Grid from '@mui/material/Grid';
-
-// project imports
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import OrdersTable from 'sections/dashboard/default/OrdersTable';
 
-// icons
 import {
   Contacts,
   QuestionAnswer,
@@ -336,51 +331,50 @@ import {
   RssFeed
 } from '@mui/icons-material';
 
-// redux
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { getEnquiryCount } from '../../container/enquries/slice';
 import { getFollowUps } from '../../container/follow-up/slice';
 import { getContacts } from '../../container/contact/slice';
-import { getCourse } from '../../container/courses/slice';
-import { getColleges } from '../../container/colleges/slice';
 import { getServices } from '../../container/service/slice';
 import { getBlog } from '../../container/blog/slice';
 import { getGalleries } from '../../container/gallery/slice';
+import { getAllColleges } from '../../container/colleges/domestic/slice';
+import { getAllCourses } from '../../container/courses/slice';
 
 export default function DashboardDefault() {
   const dispatch = useDispatch();
 
+  // State selectors
   const { enquiryCount } = useSelector((state) => state.enquiries);
   const { followUps } = useSelector((state) => state.followUp);
   const { contacts } = useSelector((state) => state.contact);
-  const { courses } = useSelector((state) => state.courses);
-  const { colleges } = useSelector((state) => state.college);
+  const { allCourses } = useSelector((state) => state.courses); // ✅ updated name
+  const { colleges } = useSelector((state) => state.domesticColleges);
   const { services } = useSelector((state) => state.services);
   const { blogs } = useSelector((state) => state.blog);
   const { galleries } = useSelector((state) => state.gallery);
 
   useEffect(() => {
-    dispatch(getEnquiryCount());
-    dispatch(getFollowUps());
-    dispatch(getContacts());
-    dispatch(getCourse());
-    dispatch(getColleges());
-    dispatch(getServices());
-    dispatch(getBlog());
-    dispatch(getGalleries());
+    if (!enquiryCount) dispatch(getEnquiryCount());
+    if (!followUps.length) dispatch(getFollowUps());
+    if (!contacts.length) dispatch(getContacts());
+    if (!allCourses.length) dispatch(getAllCourses()); // ✅ only once
+    if (!colleges.length) dispatch(getAllColleges());
+    if (!services.length) dispatch(getServices());
+    if (!blogs.length) dispatch(getBlog());
+    if (!galleries.length) dispatch(getGalleries());
   }, [dispatch]);
 
-  // Current counts
+  // Metric counts
   const followUpCount = followUps?.length || 0;
   const contactsCount = contacts?.length || 0;
-  const coursesCount = courses?.length || 0;
+  const coursesCount = allCourses?.length || 0;
   const collegesCount = colleges?.length || 0;
   const servicesCount = services?.length || 0;
   const blogsCount = blogs?.length || '-';
   const galleriesCount = galleries?.length || '-';
 
-  // Previous mock data
   const previousData = {
     enquiries: 1000,
     followUps: 800,
@@ -392,7 +386,6 @@ export default function DashboardDefault() {
     galleries: 5
   };
 
-  // Helper to compute color and change %
   const getMetric = (current, previous) => {
     const percent = previous ? ((current - previous) / previous) * 100 : 0;
     const isLoss = percent < 0;
@@ -400,7 +393,6 @@ export default function DashboardDefault() {
     return { percent: parseFloat(percent.toFixed(2)), isLoss, color };
   };
 
-  // Metrics data
   const metrics = [
     {
       title: 'Enquiries',
@@ -436,19 +428,16 @@ export default function DashboardDefault() {
       title: 'Services',
       count: servicesCount.toString(),
       icon: SpaceDashboard,
-      // ...getMetric(servicesCount, previousData.services)
     },
     {
       title: 'Blogs',
       count: blogsCount.toString(),
       icon: RssFeed,
-      // ...getMetric(blogsCount, previousData.blogs)
     },
     {
       title: 'Gallery',
       count: galleriesCount.toString(),
       icon: Collections,
-      // ...getMetric(galleriesCount, previousData.galleries)
     }
   ];
 
@@ -467,7 +456,6 @@ export default function DashboardDefault() {
             />
           </Grid>
         ))}
-
       </Grid>
       <Grid container spacing={2} mt={3}>
         <Grid item md={12} lg={12}>

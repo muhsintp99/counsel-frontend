@@ -18,10 +18,9 @@ import {
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCountry } from '../../container/country/slice';
-import { getCourse } from '../../container/courses/slice';
+import { getCountry } from '../../../container/country/slice';
+import { getInternationalCourses } from '../../../container/courses/slice'
 
-// Validation schema for college
 const validationSchema = Yup.object({
   name: Yup.string().required('College name is required'),
   code: Yup.string().required('College code is required'),
@@ -45,14 +44,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   const isEdit = Boolean(editData && editData._id);
   const dispatch = useDispatch();
   const { countries } = useSelector((state) => state.country);
-  const { courses } = useSelector((state) => state.courses);
+  const { international } = useSelector((state) => state.courses);
 
   const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
-    // Fetch countries and courses when component mounts
     dispatch(getCountry());
-    dispatch(getCourse());
+    dispatch(getInternationalCourses());
   }, [dispatch]);
 
   useEffect(() => {
@@ -62,6 +60,16 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
       setPreviewImage(null);
     }
   }, [editData]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'isDomestic' ? value === 'true' : value,
+    }));
+  };
+
+  const filteredCountries = countries.filter(country => country.isDomestic === false);
 
   const initialValues = {
     name: editData?.name || '',
@@ -75,26 +83,28 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     category: editData?.category || '',
     status: editData?.status || '',
     image: null,
-    courses: editData?.courses?.map(course => course._id || course) || [], // Ensure course IDs
+    courses: editData?.international?.map(course => course._id || course) || [],
     facilities: editData?.facilities || [],
     services: editData?.services || [],
     map: editData?.map || '',
     visible: editData?.visible !== undefined ? editData.visible : true,
+    isDomestic: false,
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
     console.log('Form submission values:', values);
     onSubmit({
       ...values,
-      courses: values.courses.map(course => typeof course === 'object' ? course._id : course), // Extract _id
+      courses: values.courses.map(course => typeof course === 'object' ? course._id : course),
+      isDomestic: false, // ✅ Always false for international
     });
     setSubmitting(false);
   };
 
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit College' : 'Add New College'}</DialogTitle>
-
+      <DialogTitle>{isEdit ? 'Edit International College' : 'Add New International College'}</DialogTitle>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -105,7 +115,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
           <Form>
             <DialogContent>
               <Grid container spacing={3}>
-                {/* College Name */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -117,8 +126,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.name && errors.name}
                   />
                 </Grid>
-
-                {/* College Code */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -130,8 +137,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.code && errors.code}
                   />
                 </Grid>
-
-                {/* Email */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -143,8 +148,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.email && errors.email}
                   />
                 </Grid>
-
-                {/* Phone */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -156,8 +159,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.phone && errors.phone}
                   />
                 </Grid>
-
-                {/* Address */}
                 <Grid item xs={12}>
                   <Field
                     as={TextField}
@@ -169,8 +170,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.address && errors.address}
                   />
                 </Grid>
-
-                {/* Website */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -182,8 +181,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.website && errors.website}
                   />
                 </Grid>
-
-                {/* Country */}
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth variant="outlined" error={touched.country && Boolean(errors.country)}>
                     <InputLabel id="country-label">Country *</InputLabel>
@@ -195,7 +192,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                       value={values.country}
                       onChange={(e) => setFieldValue('country', e.target.value)}
                     >
-                      {countries.map((country) => (
+                      {filteredCountries.map((country) => (
                         <MenuItem key={country._id} value={country._id}>
                           {country.name}
                         </MenuItem>
@@ -208,8 +205,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     )}
                   </FormControl>
                 </Grid>
-
-                {/* Category */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -227,8 +222,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     <MenuItem value="Diploma">Diploma</MenuItem>
                   </Field>
                 </Grid>
-
-                {/* Status */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -246,8 +239,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     <MenuItem value="regular">Regular</MenuItem>
                   </Field>
                 </Grid>
-
-                {/* Courses */}
                 <Grid item xs={12}>
                   <FormControl fullWidth variant="outlined" error={touched.courses && Boolean(errors.courses)}>
                     <InputLabel id="courses-label">Courses</InputLabel>
@@ -262,13 +253,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                       renderValue={(selected) => (
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           {selected.map((courseId) => {
-                            const course = courses.find((c) => c._id === courseId);
+                            const course = international.find((c) => c._id === courseId);
                             return course ? <Chip key={courseId} label={course.title} /> : null;
                           })}
                         </Box>
                       )}
                     >
-                      {courses.map((course) => (
+                      {international.map((course) => (
                         <MenuItem key={course._id} value={course._id}>
                           {course.title}
                         </MenuItem>
@@ -281,8 +272,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     )}
                   </FormControl>
                 </Grid>
-
-                {/* Description */}
                 <Grid item xs={12}>
                   <Field
                     as={TextField}
@@ -296,8 +285,22 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.desc && errors.desc}
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="domestic-label">Domestic</InputLabel>
+                    <Field
+                      as={Select}
+                      labelId="domestic-label"
+                      name="isDomestic"
+                      label="Domestic"
+                      disabled 
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Field>
+                  </FormControl>
+                </Grid>
 
-                {/* Image Upload */}
                 <Grid item xs={12} sm={6}>
                   <Box>
                     <Typography variant="body2" sx={{ mb: 1 }}>
@@ -333,8 +336,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     )}
                   </Box>
                 </Grid>
-
-                {/* Show Preview Image */}
                 {previewImage && (
                   <Grid item xs={12}>
                     <Box>
@@ -357,7 +358,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                 )}
               </Grid>
             </DialogContent>
-
             <DialogActions sx={{ p: 3 }}>
               <Button onClick={onClose} variant="outlined">
                 Cancel

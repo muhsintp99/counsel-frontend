@@ -4,69 +4,91 @@ import commonApi from '../../../container/api';
 import config from '../../../config';
 import * as actions from './slice';
 
-// GET All Courses
-function* getCourseSaga(action) {
+// All Courses
+function* getAllCoursesSaga() {
   try {
     const params = {
-      api: `${config.configApi}/courses/`,
-      method: 'GET',
-      authorization: false,
-      params: action.payload,
+      api: `${config.configApi}/courses`,
+      method: 'GET'
     };
     const response = yield call(commonApi, params);
-    if (!response.data) throw new Error('No data returned');
-    yield put(actions.getCourseSuccess(response));
+    yield put(actions.getAllCoursesSuccess(response));
   } catch (error) {
-    yield put(actions.getCourseFail(error.message));
-    toast.error(error.message || 'Failed to load courses');
+    yield put(actions.getAllCoursesFail(error.message));
+    toast.error(error.message || 'Failed to fetch courses');
   }
 }
 
-// GET Course by ID
+// Domestic Courses
+function* getDomesticCoursesSaga() {
+  try {
+    const params = {
+      api: `${config.configApi}/courses`,
+      method: 'GET',
+      body: { domestic: true }
+    };
+    const response = yield call(commonApi, params);
+    yield put(actions.getDomesticCoursesSuccess(response));
+
+  } catch (error) {
+    yield put(actions.getDomesticCoursesFail(error.message));
+    toast.error(error.message || 'Failed to fetch domestic courses');
+  }
+}
+
+// International Courses
+function* getInternationalCoursesSaga() {
+  try {
+    const params = {
+      api: `${config.configApi}/courses`,
+      method: 'GET',
+      body: { domestic: false }
+    };
+    const response = yield call(commonApi, params);
+    yield put(actions.getInternationalCoursesSuccess(response));
+  } catch (error) {
+    yield put(actions.getInternationalCoursesFail(error.message));
+    toast.error(error.message || 'Failed to fetch international courses');
+  }
+}
+
+// Get Course By ID
 function* getCourseByIdSaga(action) {
   try {
     const params = {
       api: `${config.configApi}/courses/${action.payload}`,
-      method: 'GET',
-      authorization: false,
+      method: 'GET'
     };
     const response = yield call(commonApi, params);
-    const item = response.data || response;
-    yield put(actions.getCourseByIdSuccess(item));
+    yield put(actions.getCourseByIdSuccess(response));
   } catch (error) {
     yield put(actions.getCourseByIdFail(error.message));
-    toast.error(error.message || 'Failed to load course');
+    toast.error(error.message || 'Failed to fetch course');
   }
 }
 
-// ADD Course
+// Add Course
 function* addCourseSaga(action) {
   try {
-    const { title, shortDescription, fullDescription, duration, category, mode, fees, image, syllabus, prerequisites, tags, visible, createdBy, updatedBy } = action.payload;
     const formData = new FormData();
-    formData.append('title', title || '');
-    formData.append('shortDescription', shortDescription || '');
-    formData.append('fullDescription', fullDescription || '');
-    formData.append('duration', duration || '');
-    formData.append('category', category || '');
-    formData.append('mode', mode || '');
-    formData.append('fees', fees || 0);
-    if (image) formData.append('image', image);
-    syllabus?.forEach(item => formData.append('syllabus[]', item));
-    prerequisites?.forEach(item => formData.append('prerequisites[]', item));
-    tags?.forEach(item => formData.append('tags[]', item));
-    formData.append('visible', visible !== undefined ? visible : true);
-    formData.append('createdBy', createdBy || 'admin');
-    formData.append('updatedBy', updatedBy || 'admin');
+    for (const key in action.payload) {
+      const value = action.payload[key];
+      if (Array.isArray(value)) {
+        value.forEach((item) => formData.append(`${key}[]`, item));
+      } else {
+        formData.append(key, value);
+      }
+    }
 
     const params = {
       api: `${config.configApi}/courses`,
       method: 'POST',
       body: formData,
-      authorization: 'Bearer',
+      authorization: 'Bearer'
     };
     const response = yield call(commonApi, params);
-    yield put(actions.addCourseSuccess(response.data));
+    yield put(actions.addCourseSuccess(response));
+    yield put(actions.getAllCourses());
     toast.success('Course added successfully');
   } catch (error) {
     yield put(actions.addCourseFail(error.message));
@@ -74,91 +96,61 @@ function* addCourseSaga(action) {
   }
 }
 
-// UPDATE Course
+// Update Course
 function* updateCourseSaga(action) {
   try {
-    console.log('updateCourseSaga payload:', action.payload);
-    const { _id, title, shortDescription, fullDescription, duration, category, mode, fees, image, syllabus, prerequisites, tags, visible, updatedBy } = action.payload;
-
-    if (!_id) {
-      throw new Error('Missing course ID in payload');
-    }
-
+    const { id, ...updateData } = action.payload;
     const formData = new FormData();
-    if (title) formData.append('title', title);
-    if (shortDescription) formData.append('shortDescription', shortDescription);
-    if (fullDescription) formData.append('fullDescription', fullDescription);
-    if (duration) formData.append('duration', duration);
-    if (category) formData.append('category', category);
-    if (mode) formData.append('mode', mode);
-    if (fees !== undefined) formData.append('fees', fees);
-    if (image) formData.append('image', image);
-    if (syllabus) syllabus.forEach(item => formData.append('syllabus[]', item));
-    if (prerequisites) prerequisites.forEach(item => formData.append('prerequisites[]', item));
-    if (tags) tags.forEach(item => formData.append('tags[]', item));
-    if (visible !== undefined) formData.append('visible', visible);
-    if (updatedBy) formData.append('updatedBy', updatedBy);
+    for (const key in updateData) {
+      const value = updateData[key];
+      if (Array.isArray(value)) {
+        value.forEach((item) => formData.append(`${key}[]`, item));
+      } else {
+        formData.append(key, value);
+      }
+    }
 
     const params = {
-      api: `${config.configApi}/courses/${_id}`,
+      api: `${config.configApi}/courses/${id}`,
       method: 'PUT',
       body: formData,
-      authorization: 'Bearer',
+      authorization: 'Bearer'
     };
     const response = yield call(commonApi, params);
-    console.log('updateCourseSaga response.data:', response.data); // Debug log
-    if (!response.data || !response.data._id) {
-      throw new Error('Invalid response: missing course data or _id');
-    }
-    yield put(actions.updateCourseSuccess(response.data));
+    yield put(actions.updateCourseSuccess(response));
+    yield put(actions.getAllCourses());
     toast.success('Course updated successfully');
   } catch (error) {
-    console.error('updateCourseSaga error:', error);
     yield put(actions.updateCourseFail(error.message));
     toast.error(error.message || 'Failed to update course');
   }
 }
 
-// DELETE Course
+// Delete Course
 function* deleteCourseSaga(action) {
   try {
     const params = {
       api: `${config.configApi}/courses/${action.payload}`,
       method: 'DELETE',
-      authorization: 'Bearer',
+      authorization: 'Bearer'
     };
-    const response = yield call(commonApi, params);
+    yield call(commonApi, params);
     yield put(actions.deleteCourseSuccess(action.payload));
-    toast.success('Course permanently deleted successfully');
+    yield put(actions.getAllCourses());
+    toast.success('Course deleted successfully');
   } catch (error) {
     yield put(actions.deleteCourseFail(error.message));
     toast.error(error.message || 'Failed to delete course');
   }
 }
 
-// GET Total Course Count
-function* totalCourseCountSaga() {
-  try {
-    const params = {
-      api: `${config.configApi}/courses/`,
-      method: 'GET',
-      authorization: false,
-    };
-    const response = yield call(commonApi, params);
-    const count = response.total || response.data?.length || 0;
-    yield put(actions.totalCourseCountSuccess({ count }));
-  } catch (error) {
-    yield put(actions.totalCourseCountFail(error.message));
-    toast.error(error.message || 'Failed to get course count');
-  }
-}
-
 // Watcher
-export default function* CourseActionWatcher() {
-  yield takeEvery('courses/getCourse', getCourseSaga);
+export default function* courseWatcher() {
+  yield takeEvery('courses/getAllCourses', getAllCoursesSaga);
+  yield takeEvery('courses/getDomesticCourses', getDomesticCoursesSaga);
+  yield takeEvery('courses/getInternationalCourses', getInternationalCoursesSaga);
   yield takeEvery('courses/getCourseById', getCourseByIdSaga);
   yield takeEvery('courses/addCourse', addCourseSaga);
   yield takeEvery('courses/updateCourse', updateCourseSaga);
   yield takeEvery('courses/deleteCourse', deleteCourseSaga);
-  yield takeEvery('courses/totalCourseCount', totalCourseCountSaga);
 }
