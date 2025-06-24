@@ -341,6 +341,7 @@ import { getBlog } from '../../container/blog/slice';
 import { getGalleries } from '../../container/gallery/slice';
 import { getAllColleges } from '../../container/colleges/domestic/slice';
 import { getAllCourses } from '../../container/courses/slice';
+import { getIntakes } from '../../container/intake/slice';
 
 export default function DashboardDefault() {
   const dispatch = useDispatch();
@@ -351,7 +352,7 @@ export default function DashboardDefault() {
   const { contacts } = useSelector((state) => state.contact);
   const { allCourses } = useSelector((state) => state.courses); // ✅ updated name
   const { colleges } = useSelector((state) => state.domesticColleges);
-  const { services } = useSelector((state) => state.services);
+  const { intakes } = useSelector((state) => state.intakes);
   const { blogs } = useSelector((state) => state.blog);
   const { galleries } = useSelector((state) => state.gallery);
 
@@ -361,7 +362,7 @@ export default function DashboardDefault() {
     if (!contacts.length) dispatch(getContacts());
     if (!allCourses.length) dispatch(getAllCourses()); // ✅ only once
     if (!colleges.length) dispatch(getAllColleges());
-    if (!services.length) dispatch(getServices());
+    if (!intakes.length) dispatch(getIntakes());
     if (!blogs.length) dispatch(getBlog());
     if (!galleries.length) dispatch(getGalleries());
   }, [dispatch]);
@@ -371,7 +372,7 @@ export default function DashboardDefault() {
   const contactsCount = contacts?.length || 0;
   const coursesCount = allCourses?.length || 0;
   const collegesCount = colleges?.length || 0;
-  const servicesCount = services?.length || 0;
+  const intakesCount = intakes?.length || 0;
   const blogsCount = blogs?.length || '-';
   const galleriesCount = galleries?.length || '-';
 
@@ -381,7 +382,7 @@ export default function DashboardDefault() {
     contacts: 400,
     courses: 25,
     colleges: 1,
-    services: 5,
+    intakes: 5,
     blogs: 5,
     galleries: 5
   };
@@ -425,8 +426,8 @@ export default function DashboardDefault() {
       ...getMetric(collegesCount, previousData.colleges)
     },
     {
-      title: 'Services',
-      count: servicesCount.toString(),
+      title: 'Intakes',
+      count: intakesCount.toString(),
       icon: SpaceDashboard,
     },
     {
