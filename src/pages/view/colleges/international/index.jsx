@@ -46,13 +46,13 @@ const Index = () => {
   const title = 'International Colleges';
 
   useEffect(() => {
-    console.log('Dispatching getColleges for international');
+    // console.log('Dispatching getColleges for international');
     dispatch(getColleges({ domestic: false }));
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log('International colleges state updated:', { colleges, loading, error });
-  }, [colleges, loading, error]);
+  // useEffect(() => {
+  //   console.log('International colleges state updated:', { colleges, loading, error });
+  // }, [colleges, loading, error]);
 
   const handleOpenDialog = (college = null) => {
     setSelectedCollege(college);
@@ -104,7 +104,6 @@ const Index = () => {
     const validColleges = Array.isArray(colleges)
       ? colleges.filter((item) => item && typeof item === 'object')
       : [];
-    console.log('Filtered international colleges:', validColleges);
     return validColleges.filter((item) => {
       const search = searchQuery.toLowerCase();
       return (

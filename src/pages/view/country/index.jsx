@@ -96,7 +96,7 @@ const Index = () => {
 
 
   const handleSubmitForm = (values) => {
-    console.log('Form Values:', values);
+    // console.log('Form Values:', values);
 
     const payload = {
       name: values.countryName || values.name || '',
@@ -105,7 +105,6 @@ const Index = () => {
       dialCode: values.dialCode || '',
       currency: values.currency || '',
       image: values.image || '',
-      // image is removed because it's a File object (non-serializable)
     };
 
     if (editData && editData._id) {

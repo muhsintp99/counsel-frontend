@@ -7,15 +7,13 @@ import * as actions from './slice';
 // GET All Blogs
 function* getBlogSaga() {
   try {
-    console.log('getBlogSaga called');
     const params = {
       api: `${config.configApi}/blog/`,
       method: 'GET',
       authorization: false,
     };
-    console.log('API params:', params.api);
     const response = yield call(commonApi, params);
-    console.log('API response:', response);
+
     if (!response.data) throw new Error('No data returned');
     yield put(actions.getBlogSuccess(response));
   } catch (error) {

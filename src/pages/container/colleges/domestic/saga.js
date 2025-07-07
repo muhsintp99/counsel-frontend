@@ -32,7 +32,7 @@ function createCollegeFormData(payload) {
 }
 
 function* getCollegesSaga(action) {
-  console.log('getDomesticCollegesSaga triggered');
+  // console.log('getDomesticCollegesSaga triggered');
   try {
     const queryParams = action.payload ? new URLSearchParams({ ...action.payload, domestic: true }).toString() : 'domestic=true';
     const apiUrl = `${config.configApi}/college?${queryParams}`;
@@ -42,7 +42,7 @@ function* getCollegesSaga(action) {
       authorization: false,
     };
     const response = yield call(commonApi, params);
-    console.log('GET Domestic Colleges Response:', response);
+    // console.log('GET Domestic Colleges Response:', response);
     const colleges = response.colleges || response.data || response || [];
     const pagination = response.colleges ? {
       totalPages: response.totalPages,
@@ -67,9 +67,9 @@ function* getAllCollegesSaga() {
       authorization: false,
     };
     const response = yield call(commonApi, params);
-    console.log('GET College Response:', response);
+    // console.log('GET College Response:', response);
     const colleges = response.colleges || response || [];
-    console.log('GET All College Response:', colleges);
+    // console.log('GET All College Response:', colleges);
     yield put(actions.getAllCollegesSuccess(colleges));
   } catch (error) {
     console.error('GET College Error:', error);
@@ -99,9 +99,9 @@ function* getCollegeByIdSaga(action) {
 
 function* addCollegeSaga(action) {
   try {
-    console.log('Add Domestic College Payload:', action.payload);
+    // console.log('Add Domestic College Payload:', action.payload);
     const formData = createCollegeFormData(action.payload);
-    console.log('FormData contents:');
+    // console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }
@@ -125,10 +125,10 @@ function* addCollegeSaga(action) {
 
 function* updateCollegeSaga(action) {
   try {
-    console.log('Update Domestic College Payload:', action.payload);
+    // console.log('Update Domestic College Payload:', action.payload);
     const { id, ...updateData } = action.payload;
     const formData = createCollegeFormData(updateData);
-    console.log('FormData contents:');
+    // console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }

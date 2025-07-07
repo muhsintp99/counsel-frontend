@@ -13,7 +13,6 @@ function* getContactsSaga() {
       authorization: false,
     };
     const response = yield call(commonApi, params);
-    console.log('GET Contacts Response:', response);
     const contacts = response.data || response || [];
     yield put(actions.getContactsSuccess(contacts));
   } catch (error) {
@@ -44,14 +43,12 @@ function* getContactByIdSaga(action) {
 // ADD Contact
 function* addContactSaga(action) {
   try {
-    console.log('Add Contact Payload:', action.payload);
     const { name, email, message } = action.payload; // Adjust fields as needed
     const formData = new FormData();
     if (name) formData.append('name', name);
     if (email) formData.append('email', email);
     if (message) formData.append('message', message);
 
-    console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }
@@ -76,12 +73,10 @@ function* addContactSaga(action) {
 // UPDATE Contact Status
 function* updateContactStatusSaga(action) {
   try {
-    console.log('Update Contact Status Payload:', action.payload);
     const { id, status } = action.payload;
     const formData = new FormData();
     if (status) formData.append('status', status);
 
-    console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }

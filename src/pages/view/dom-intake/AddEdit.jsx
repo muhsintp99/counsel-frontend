@@ -63,7 +63,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   };
 
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    console.log('Submitting form with values:', values);
     // Ensure status is consistent with deadline
     const deadline = new Date(values.deadlineDate);
     const today = new Date();

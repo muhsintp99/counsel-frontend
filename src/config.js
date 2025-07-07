@@ -25,6 +25,6 @@ const config = {
 
 export default config;
 
-console.log('API:', config.configApi);
-console.log('ENV:', config.env);
-console.log('TOKEN:', config.token);
+// console.log('API:', config.configApi);
+// console.log('ENV:', config.env);
+// console.log('TOKEN:', config.token);

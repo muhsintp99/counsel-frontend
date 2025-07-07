@@ -32,7 +32,6 @@ function createCollegeFormData(payload) {
 }
 
 function* getCollegesSaga(action) {
-  console.log('getInternationalCollegesSaga triggered');
   try {
     const queryParams = action.payload ? new URLSearchParams({ ...action.payload, domestic: false }).toString() : 'domestic=false';
     const apiUrl = `${config.configApi}/college?${queryParams}`;
@@ -42,7 +41,6 @@ function* getCollegesSaga(action) {
       authorization: false,
     };
     const response = yield call(commonApi, params);
-    console.log('GET International Colleges Response:', response);
     const colleges = response.colleges || response.data || response || [];
     const pagination = response.colleges ? {
       totalPages: response.totalPages,
@@ -78,9 +76,7 @@ function* getCollegeByIdSaga(action) {
 
 function* addCollegeSaga(action) {
   try {
-    console.log('Add International College Payload:', action.payload);
     const formData = createCollegeFormData(action.payload);
-    console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }
@@ -104,10 +100,8 @@ function* addCollegeSaga(action) {
 
 function* updateCollegeSaga(action) {
   try {
-    console.log('Update International College Payload:', action.payload);
     const { id, ...updateData } = action.payload;
     const formData = createCollegeFormData(updateData);
-    console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }

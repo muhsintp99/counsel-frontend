@@ -13,7 +13,6 @@ function* getCountrySaga() {
       authorization: false,
     };
     const response = yield call(commonApi, params);
-    console.log('GET Country Response:', response); // ✅ Log
     const countries = response.data || response || [];
     yield put(actions.getCountrySuccess(countries));
   } catch (error) {
@@ -46,7 +45,6 @@ function* getCountryByIdSaga(action) {
 // ADD Country
 function* addCountrySaga(action) {
   try {
-    console.log('Add Country Payload:', action.payload);
     const { name, code, isoCode, dialCode, currency, image } = action.payload;
     const formData = new FormData();
     formData.append('name', name || '');
@@ -58,7 +56,6 @@ function* addCountrySaga(action) {
       formData.append('image', image);
     }
 
-    console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }
@@ -85,7 +82,6 @@ function* addCountrySaga(action) {
 // UPDATE Country
 function* updateCountrySaga(action) {
   try {
-    console.log('Update Country Payload:', action.payload);
     const { id, data } = action.payload;
     const { name, code, isoCode, dialCode, currency, image } = data;
     const formData = new FormData();
@@ -96,7 +92,6 @@ function* updateCountrySaga(action) {
     if (currency) formData.append('currency', currency);
     if (image) formData.append('image', image);
 
-    console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
     }

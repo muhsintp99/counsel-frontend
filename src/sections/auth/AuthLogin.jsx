@@ -70,7 +70,7 @@ export default function AuthLogin({ isDemo = false }) {
             .max(10, 'Password must be less than 10 characters')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          console.log("=====values=====", values);
+          // console.log("=====values=====", values);
 
           try {
             setStatus({ success: true });

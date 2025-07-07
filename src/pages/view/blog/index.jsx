@@ -86,7 +86,7 @@ const Index = () => {
   };
 
   const handleSubmitForm = (values) => {
-    console.log('Submitting form with values:', values);
+    // console.log('Submitting form with values:', values);
     const payload = {
       title: values.title || '',
       shortDesc: values.shortDesc || '',
@@ -98,10 +98,10 @@ const Index = () => {
     };
 
     if (editData && editData._id) {
-      console.log('Updating blog with payload:', { id: editData._id, data: payload });
+      // console.log('Updating blog with payload:', { id: editData._id, data: payload });
       dispatch(updateBlog({ id: editData._id, data: payload }));
     } else {
-      console.log('Adding blog with payload:', payload);
+      // console.log('Adding blog with payload:', payload);
       dispatch(addBlog(payload));
     }
     setOpenDialog(false);

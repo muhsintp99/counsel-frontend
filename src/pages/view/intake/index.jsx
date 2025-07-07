@@ -90,7 +90,6 @@ const Index = () => {
   };
 
   const handleSubmitForm = (values) => {
-    console.log('Form Values:', values);
     const payload = {
       college: values.college,
       intakeMonth: values.intakeMonth,

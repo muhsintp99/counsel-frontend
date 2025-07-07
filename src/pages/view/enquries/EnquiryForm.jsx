@@ -172,13 +172,13 @@ const handleSubmit = async (values, { resetForm, setSubmitting }) => {
             <Box display="flex" alignItems="center">
               <Email sx={{ mr: 1, fontSize: '1.2rem' }} />
               <Typography variant="body1" fontWeight="500">
-                support@example.com
+                 info@edspiriainternational.com
               </Typography>
             </Box>
             <Box display="flex" alignItems="center">
               <Phone sx={{ mr: 1, fontSize: '1.2rem' }} />
               <Typography variant="body1" fontWeight="500">
-                +91 98765 43210
+                +91 8848 241 321
               </Typography>
             </Box>
           </Box>

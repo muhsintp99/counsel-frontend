@@ -69,7 +69,7 @@ const domisticCoursesSlice = createSlice({
     updateCourseSuccess: (state, action) => {
       state.loading = false;
       const updated = action.payload;
-      console.log('updateCourseSuccess payload:', updated); // Debug log
+      // console.log('updateCourseSuccess payload:', updated); // Debug log
       if (!updated || !updated._id) {
         console.error('Invalid payload in updateCourseSuccess: missing _id');
         state.error = 'Invalid course data received';

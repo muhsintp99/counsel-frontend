@@ -46,14 +46,13 @@ const Index = () => {
   const title = 'Domestic Colleges';
 
  useEffect(() => {
-  console.log('Dispatching getAllColleges for domestic');
   dispatch(getColleges({ domestic: true }));
 }, [dispatch]);
 
 
-  useEffect(() => {
-    console.log('Domestic colleges state updated:', { colleges, loading, error });
-  }, [colleges, loading, error]);
+  // useEffect(() => {
+  //   console.log('Domestic colleges state updated:', { colleges, loading, error });
+  // }, [colleges, loading, error]);
 
   const handleOpenDialog = (college = null) => {
     setSelectedCollege(college);
@@ -105,7 +104,6 @@ const Index = () => {
     const validColleges = Array.isArray(colleges)
       ? colleges.filter((item) => item && typeof item === 'object')
       : [];
-    console.log('Filtered Domestic colleges:', validColleges);
     return validColleges.filter((item) => {
       const search = searchQuery.toLowerCase();
       return (

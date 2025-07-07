@@ -40,13 +40,11 @@ const internationalCollegeSlice = createSlice({
       const { colleges, pagination } = action.payload;
       state.colleges = colleges || [];
       state.pagination = pagination || null;
-      console.log('getInternationalCollegesSuccess:', colleges);
     },
     getCollegesFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.colleges = [];
-      console.log('getInternationalCollegesFail:', action.payload);
     },
     getCollegeById: (state) => {
       state.loading = true;

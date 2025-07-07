@@ -7,15 +7,12 @@ import * as actions from './slice';
 // GET All Gallery Items
 function* getGallerySaga() {
   try {
-    console.log('getGallerySaga called');
     const params = {
       api: `${config.configApi}/gallery/`,
       method: 'GET',
       authorization: false,
     };
-    console.log('API params:', params.api);
     const response = yield call(commonApi, params);
-    console.log('API response:', response);
     if (!response.data) throw new Error('No data returned');
     yield put(actions.getGalleriesSuccess(response.data));
   } catch (error) {

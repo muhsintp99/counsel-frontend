@@ -43,7 +43,6 @@ const Index = () => {
   const dispatch = useDispatch();
 const { services, serviceCount, selectedService, loading, error } = useSelector((state) => state.services);
 
-  console.log("Redux state.services:", services);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

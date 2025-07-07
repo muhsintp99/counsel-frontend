@@ -40,13 +40,11 @@ const domesticCollegeSlice = createSlice({
       const { colleges, pagination } = action.payload;
       state.colleges = colleges || [];
       state.pagination = pagination || null;
-      console.log('getDomesticCollegesSuccess:', colleges);
     },
     getCollegesFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.colleges = [];
-      console.log('getDomesticCollegesFail:', action.payload);
     },
 
 
@@ -57,13 +55,11 @@ const domesticCollegeSlice = createSlice({
     getAllCollegesSuccess: (state, action) => {
       state.loading = false;
       state.colleges = action.payload || [];
-      console.log('getAllCollegesSuccess:', action.payload);
     },
     getAllCollegesFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.colleges = [];
-      console.log('getDomesticCollegesFail:', action.payload);
     },
 
     getCollegeById: (state) => {

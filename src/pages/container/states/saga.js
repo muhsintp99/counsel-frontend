@@ -18,7 +18,7 @@ function* getStateSaga() {
     // ✅ response.data is already the array
     const states = response.data || [];
 
-    console.log("✅ Extracted states:", states); // should now log 3 states
+    // console.log("✅ Extracted states:", states); // should now log 3 states
 
     yield put(actions.getStateSuccess(states));
   } catch (error) {

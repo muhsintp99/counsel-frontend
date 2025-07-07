@@ -80,7 +80,7 @@ function* getIntakeByIdSaga(action) {
 // ADD Intake
 function* addIntakeSaga(action) {
   try {
-    console.log('Add Intake Payload:', action.payload);
+    // console.log('Add Intake Payload:', action.payload);
     const { college, intakeMonth, intakeYear, deadlineDate, status, visible,isDomestic } = action.payload;
     const payload = {
       college,
@@ -114,7 +114,7 @@ function* addIntakeSaga(action) {
 // UPDATE Intake
 function* updateIntakeSaga(action) {
   try {
-    console.log('Update Intake Payload:', action.payload);
+    // console.log('Update Intake Payload:', action.payload);
     const { id, college, intakeMonth, intakeYear, deadlineDate, status, visible } = action.payload;
     const payload = {
       college,

@@ -52,7 +52,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
-    console.log('Form submission values:', values);
     onSubmit(values);
     setSubmitting(false);
   };

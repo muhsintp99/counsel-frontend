@@ -302,12 +302,12 @@ function* commonApi(value, retries = 2, delayMs = 1000) {
       }),
     };
 
-    console.log('🔍 API Request:', axiosConfig);
+    // console.log('🔍 API Request:', axiosConfig);
 
     const response = yield axios(axiosConfig);
     const data = response.data;
 
-    console.log('✅ API Response:', data);
+    // console.log('✅ API Response:', data);
 
     if (value.successAction) {
       yield put({ type: value.successAction.type, payload: data });
