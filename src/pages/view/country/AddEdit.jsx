@@ -8,7 +8,8 @@ import {
   Button,
   Grid,
   Box,
-  Typography
+  Typography,
+  FormLabel
 } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -25,7 +26,6 @@ const validationSchema = Yup.object({
 
 const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   const isEdit = Boolean(editData && editData._id);
-
   const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
@@ -45,32 +45,42 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     image: null
   };
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    console.log('Form submission values:', values);
-    onSubmit(values);
-    setSubmitting(false);
-  };
-
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={() => {
+        onClose();
+        setPreviewImage(null);
+      }}
+      maxWidth="md"
+      fullWidth
+    >
       <DialogTitle>{isEdit ? 'Edit Country' : 'Add New Country'}</DialogTitle>
 
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={handleSubmit}
         enableReinitialize
+        onSubmit={(values, { setSubmitting, resetForm }) => {
+          onSubmit(values);
+          resetForm();
+          setPreviewImage(null);
+          setSubmitting(false);
+          onClose();
+        }}
       >
-        {({ values, errors, touched, setFieldValue, isSubmitting }) => (
+        {({ values, errors, touched, setFieldValue, isSubmitting, resetForm }) => (
           <Form>
             <DialogContent>
               <Grid container spacing={3}>
+
                 {/* Country Name */}
                 <Grid item xs={12} sm={6}>
+                  <FormLabel>Country Name <span style={{ color: 'red' }}>*</span></FormLabel>
                   <Field
                     as={TextField}
                     name="countryName"
-                    label="Country Name *"
+                    placeholder="Enter country name"
                     fullWidth
                     variant="outlined"
                     error={touched.countryName && Boolean(errors.countryName)}
@@ -80,13 +90,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
                 {/* Country Code */}
                 <Grid item xs={12} sm={6}>
+                  <FormLabel>Country Code <span style={{ color: 'red' }}>*</span></FormLabel>
                   <Field
                     as={TextField}
                     name="code"
-                    label="Country Code *"
+                    placeholder="E.g., IN, US, UK"
                     fullWidth
                     variant="outlined"
-                    placeholder="e.g., US, IN, UK"
                     error={touched.code && Boolean(errors.code)}
                     helperText={touched.code && errors.code}
                   />
@@ -94,13 +104,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
                 {/* ISO Code */}
                 <Grid item xs={12} sm={6}>
+                  <FormLabel>ISO Code <span style={{ color: 'red' }}>*</span></FormLabel>
                   <Field
                     as={TextField}
                     name="isoCode"
-                    label="ISO Code *"
+                    placeholder="E.g., IND, USA, GBR"
                     fullWidth
                     variant="outlined"
-                    placeholder="e.g., USA, IND, GBR"
                     error={touched.isoCode && Boolean(errors.isoCode)}
                     helperText={touched.isoCode && errors.isoCode}
                   />
@@ -108,13 +118,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
                 {/* Dial Code */}
                 <Grid item xs={12} sm={6}>
+                  <FormLabel>Dial Code <span style={{ color: 'red' }}>*</span></FormLabel>
                   <Field
                     as={TextField}
                     name="dialCode"
-                    label="Dial Code *"
+                    placeholder="E.g., +91, +1, +44"
                     fullWidth
                     variant="outlined"
-                    placeholder="e.g., +1, +91, +44"
                     error={touched.dialCode && Boolean(errors.dialCode)}
                     helperText={touched.dialCode && errors.dialCode}
                   />
@@ -122,13 +132,13 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
                 {/* Currency */}
                 <Grid item xs={12} sm={6}>
+                  <FormLabel>Currency <span style={{ color: 'red' }}>*</span></FormLabel>
                   <Field
                     as={TextField}
                     name="currency"
-                    label="Currency *"
+                    placeholder="E.g., INR, USD, GBP"
                     fullWidth
                     variant="outlined"
-                    placeholder="e.g., USD, INR, GBP"
                     error={touched.currency && Boolean(errors.currency)}
                     helperText={touched.currency && errors.currency}
                   />
@@ -136,42 +146,38 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
                 {/* Image Upload */}
                 <Grid item xs={12} sm={6}>
-                  <Box>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      Country Flag
+                  <FormLabel>Country Flag</FormLabel>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files[0];
+                      setFieldValue('image', file);
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setPreviewImage(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      } else {
+                        setPreviewImage(null);
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px'
+                    }}
+                  />
+                  {touched.image && errors.image && (
+                    <Typography color="error" variant="caption">
+                      {errors.image}
                     </Typography>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) => {
-                        const file = event.currentTarget.files[0];
-                        setFieldValue('image', file);
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setPreviewImage(reader.result);
-                          };
-                          reader.readAsDataURL(file);
-                        } else {
-                          setPreviewImage(null);
-                        }
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px'
-                      }}
-                    />
-                    {touched.image && errors.image && (
-                      <Typography color="error" variant="caption">
-                        {errors.image}
-                      </Typography>
-                    )}
-                  </Box>
+                  )}
                 </Grid>
 
-                {/* Show Preview Image */}
+                {/* Preview Image */}
                 {previewImage && (
                   <Grid item xs={12}>
                     <Box>
@@ -180,7 +186,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                       </Typography>
                       <img
                         src={previewImage}
-                        alt="Flag Preview"
+                        alt="Preview"
                         style={{
                           width: 100,
                           height: 60,
@@ -196,7 +202,14 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
             </DialogContent>
 
             <DialogActions sx={{ p: 3 }}>
-              <Button onClick={onClose} variant="outlined">
+              <Button
+                onClick={() => {
+                  onClose();
+                  resetForm();
+                  setPreviewImage(null);
+                }}
+                variant="outlined"
+              >
                 Cancel
               </Button>
               <Button

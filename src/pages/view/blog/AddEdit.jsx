@@ -136,7 +136,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                 </Grid>
 
                 {/* Visibility Checkbox */}
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
                     <FormControlLabel
                       control={
@@ -161,7 +161,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                   <Typography variant="caption" color="textSecondary" sx={{ ml: 4, display: 'block' }}>
                     {values.isVisible ? 'Blog will be published and visible to users' : 'Blog will be saved as draft'}
                   </Typography>
-                </Grid>
+                </Grid> */}
 
                 {/* Image Upload */}
                 <Grid item xs={12} sm={6}>
