@@ -24,15 +24,10 @@ import { getState } from '../../../container/states/slice';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('College name is required'),
-  code: Yup.string().required('College code is required'),
-  email: Yup.string().email('Invalid email address').required('Email is required'),
-  phone: Yup.string().required('Phone number is required'),
-  address: Yup.string().required('Address is required'),
-  website: Yup.string().url('Invalid URL').nullable(),
   desc: Yup.string().nullable(),
   country: Yup.string().required('Country is required'),
   state: Yup.string().nullable(),
-  category: Yup.string().required('Category is required'),
+  category: Yup.array().of(Yup.string()).min(1, 'At least one category is required'),
   status: Yup.string().required('Status is required'),
   image: Yup.mixed().nullable(),
   courses: Yup.array().of(Yup.string()).nullable(),
@@ -79,7 +74,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     desc: editData?.desc || '',
     country: editData?.country?._id || india?._id || '',
     state: editData?.state?._id || '',
-    category: editData?.category || '',
+    category: editData?.category || [], 
     status: editData?.status || '',
     image: null,
     courses: editData?.domestic?.map((course) => course._id || course) || [],
@@ -229,22 +224,36 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Field
-                    as={TextField}
-                    name="category"
-                    label="Category *"
-                    fullWidth
-                    variant="outlined"
-                    select
-                    error={touched.category && Boolean(errors.category)}
-                    helperText={touched.category && errors.category}
-                  >
-                    <MenuItem value="Postgraduate">Postgraduate</MenuItem>
-                    <MenuItem value="Graduate">Graduate</MenuItem>
-                    <MenuItem value="PhD">PhD</MenuItem>
-                    <MenuItem value="Diploma">Diploma</MenuItem>
-                  </Field>
-                </Grid>
+  <FormControl fullWidth variant="outlined" error={touched.category && Boolean(errors.category)}>
+    <InputLabel id="category-label">Category *</InputLabel>
+    <Field
+      as={Select}
+      name="category"
+      labelId="category-label"
+      label="Category *"
+      multiple
+      value={values.category}
+      onChange={(e) => setFieldValue('category', e.target.value)}
+      renderValue={(selected) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {selected.map((cat) => (
+            <Chip key={cat} label={cat} />
+          ))}
+        </Box>
+      )}
+    >
+      <MenuItem value="Postgraduate">Postgraduate</MenuItem>
+      <MenuItem value="Graduate">Graduate</MenuItem>
+      <MenuItem value="PhD">PhD</MenuItem>
+      <MenuItem value="Diploma">Diploma</MenuItem>
+    </Field>
+    {touched.category && errors.category && (
+      <Typography color="error" variant="caption">
+        {errors.category}
+      </Typography>
+    )}
+  </FormControl>
+</Grid>
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
