@@ -17,10 +17,10 @@ import * as Yup from 'yup';
 // Validation schema
 const validationSchema = Yup.object({
   countryName: Yup.string().required('Country name is required'),
-  code: Yup.string().required('Country code is required'),
-  isoCode: Yup.string().required('ISO code is required'),
-  dialCode: Yup.string().required('Dial code is required'),
-  currency: Yup.string().required('Currency is required'),
+  //code: Yup.string().required('Country code is required'),
+  //isoCode: Yup.string().required('ISO code is required'),
+  //dialCode: Yup.string().required('Dial code is required'),
+ //currency: Yup.string().required('Currency is required'),
   image: Yup.mixed().nullable()
 });
 
