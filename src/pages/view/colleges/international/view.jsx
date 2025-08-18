@@ -107,10 +107,23 @@ const View = ({ open, onClose, data }) => {
               </Box>
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Category</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{capitalize(data.category)}</Typography>
-                </Box>
+                <Box mb={2} style={{ display: 'flex' }}>
+  <ArrowRightIcon fontSize="small" />
+  <Box>
+    <Typography sx={viewDrawerStyles.label}><strong>Category</strong></Typography>
+    {Array.isArray(data.category) && data.category.length > 0 ? (
+      <List dense>
+        {data.category.map((cat, idx) => (
+          <ListItem key={idx}>
+            <ListItemText primary={capitalize(cat)} />
+          </ListItem>
+        ))}
+      </List>
+    ) : (
+      <Typography sx={viewDrawerStyles.value}>N/A</Typography>
+    )}
+  </Box>
+</Box>
               </Box>
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
