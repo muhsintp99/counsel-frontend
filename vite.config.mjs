@@ -9,51 +9,43 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      // this ensures that the browser opens upon server start
       open: true,
-      // this sets a default port to 3000
       port: PORT,
       host: true,
+
+      // 👇 add this line to allow your domain
+      allowedHosts: ['admin.edspiriainternational.com', 'localhost'],
+
       proxy: {
         '/public': {
           target: 'https://api.edspiriainternational.com',
-          // target: 'https://counsel-backend-z72e.onrender.com',
           changeOrigin: true,
           rewrite: (path) => path,
         },
         '/countries': {
-          // target: 'https://counsel-backend-z72e.onrender.com',
           target: 'https://api.edspiriainternational.com',
           changeOrigin: true,
           rewrite: (path) => path,
         },
       },
     },
+
     preview: {
       open: true,
-      host: true
+      host: true,
+      // 👇 optionally, also allow it in preview mode
+      allowedHosts: ['admin.edspiriainternational.com', 'localhost'],
     },
+
     define: {
-      global: 'window'
+      global: 'window',
     },
+
     resolve: {
-      alias: [
-        // { find: '', replacement: path.resolve(__dirname, 'src') },
-        // {
-        //   find: /^~(.+)/,
-        //   replacement: path.join(process.cwd(), 'node_modules/$1')
-        // },
-        // {
-        //   find: /^src(.+)/,
-        //   replacement: path.join(process.cwd(), 'src/$1')
-        // }
-        // {
-        //   find: 'assets',
-        //   replacement: path.join(process.cwd(), 'src/assets')
-        // },
-      ]
+      alias: [],
     },
+
     base: API_URL,
-    plugins: [react(), jsconfigPaths()]
+    plugins: [react(), jsconfigPaths()],
   };
 });
