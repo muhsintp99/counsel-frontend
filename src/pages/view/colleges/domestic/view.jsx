@@ -13,7 +13,19 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { viewDrawerStyles } from '../../../../assets/style/commen';
 
-const capitalize = (str) => str?.toLowerCase()?.replace(/\b\w/g, (c) => c.toUpperCase()) || '';
+const capitalize = (val) => {
+  if (Array.isArray(val)) {
+    return val.map((v) =>
+      typeof v === 'string'
+        ? v.charAt(0).toUpperCase() + v.slice(1).toLowerCase()
+        : v
+    );
+  }
+  if (typeof val === 'string') {
+    return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+  }
+  return val || '';
+};
 
 const View = ({ open, onClose, data }) => {
   return (
@@ -31,29 +43,42 @@ const View = ({ open, onClose, data }) => {
       }}
     >
       <Box sx={viewDrawerStyles.mainBox}>
+        {/* Header */}
         <Box sx={viewDrawerStyles.head}>
           <IconButton onClick={onClose} sx={viewDrawerStyles.closeButton}>
             <CloseIcon />
           </IconButton>
           <Grid sx={viewDrawerStyles.headContent}>
-            <Typography sx={viewDrawerStyles.drawerTitle}>International College Details</Typography>
+            <Typography sx={viewDrawerStyles.drawerTitle}>
+              Domestic College Details
+            </Typography>
           </Grid>
         </Box>
 
+        {/* Content */}
         {data ? (
           <Grid container sx={viewDrawerStyles.dataContainer} mt={2}>
+            {/* Left Section */}
             <Grid item xs={12} md={6}>
+              {/* Image */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Image</strong></Typography>
                   <img
-                    src={data.image || '/public/default/folder.png'}
+                    src={data.image || '/public/defult/folder.png'}
                     alt="college"
-                    style={{ maxWidth: '200px', maxHeight: '160px', borderRadius: '4px', marginTop: '4px' }}
+                    style={{
+                      maxWidth: '200px',
+                      maxHeight: '160px',
+                      borderRadius: '4px',
+                      marginTop: '4px',
+                    }}
                   />
                 </Box>
               </Box>
+
+              {/* College Name */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -61,6 +86,8 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.name)}</Typography>
                 </Box>
               </Box>
+
+              {/* Code */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -68,6 +95,8 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.code}</Typography>
                 </Box>
               </Box>
+
+              {/* Email */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -75,6 +104,8 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.email || 'N/A'}</Typography>
                 </Box>
               </Box>
+
+              {/* Phone */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -83,7 +114,10 @@ const View = ({ open, onClose, data }) => {
                 </Box>
               </Box>
             </Grid>
+
+            {/* Right Section */}
             <Grid item xs={12} md={6}>
+              {/* Address */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -91,6 +125,8 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.address || 'N/A'}</Typography>
                 </Box>
               </Box>
+
+              {/* Website */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -98,6 +134,8 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.website || 'N/A'}</Typography>
                 </Box>
               </Box>
+
+              {/* Country */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -105,26 +143,27 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.country?.name || 'N/A'}</Typography>
                 </Box>
               </Box>
+
+              {/* Category (List) */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
-                <Box mb={2} style={{ display: 'flex' }}>
-  <ArrowRightIcon fontSize="small" />
-  <Box>
-    <Typography sx={viewDrawerStyles.label}><strong>Category</strong></Typography>
-    {Array.isArray(data.category) && data.category.length > 0 ? (
-      <List dense>
-        {data.category.map((cat, idx) => (
-          <ListItem key={idx}>
-            <ListItemText primary={capitalize(cat)} />
-          </ListItem>
-        ))}
-      </List>
-    ) : (
-      <Typography sx={viewDrawerStyles.value}>N/A</Typography>
-    )}
-  </Box>
-</Box>
+                <Box>
+                  <Typography sx={viewDrawerStyles.label}><strong>Category</strong></Typography>
+                  {Array.isArray(data.category) && data.category.length > 0 ? (
+                    <List dense>
+                      {data.category.map((cat, i) => (
+                        <ListItem key={i}>
+                          <ListItemText primary={capitalize(cat)} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Typography sx={viewDrawerStyles.value}>N/A</Typography>
+                  )}
+                </Box>
               </Box>
+
+              {/* Status */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -132,6 +171,17 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.status)}</Typography>
                 </Box>
               </Box>
+
+              {/* Description */}
+              <Box mb={2} style={{ display: 'flex' }}>
+                <ArrowRightIcon fontSize="small" />
+                <Box>
+                  <Typography sx={viewDrawerStyles.label}><strong>Description</strong></Typography>
+                  <Typography sx={viewDrawerStyles.value}>{data.desc || 'N/A'}</Typography>
+                </Box>
+              </Box>
+
+              {/* Courses */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
@@ -149,40 +199,6 @@ const View = ({ open, onClose, data }) => {
                   )}
                 </Box>
               </Box>
-              {/* <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Facilities</strong></Typography>
-                  {data.facilities?.length > 0 ? (
-                    <List dense>
-                      {data.facilities.map((facility, index) => (
-                        <ListItem key={index}>
-                          <ListItemText primary={facility} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  ) : (
-                    <Typography sx={viewDrawerStyles.value}>No facilities listed</Typography>
-                  )}
-                </Box>
-              </Box>
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Services</strong></Typography>
-                  {data.services?.length > 0 ? (
-                    <List dense>
-                      {data.services.map((service, index) => (
-                        <ListItem key={index}>
-                          <ListItemText primary={service} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  ) : (
-                    <Typography sx={viewDrawerStyles.value}>No services listed</Typography>
-                  )}
-                </Box>
-              </Box> */}
             </Grid>
           </Grid>
         ) : (

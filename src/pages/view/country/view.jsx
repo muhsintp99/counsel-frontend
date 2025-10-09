@@ -14,8 +14,8 @@ const View = ({ open, onClose, data }) => {
       PaperProps={{
         sx: {
           width: {
-            sm: data && Object.keys(data).length > 6 ? '90%' : '50%',
-            md: data && Object.keys(data).length > 6 ? '50%' : '30%',
+            sm: data && Object.keys(data).length > 3 ? '90%' : '50%',
+            md: data && Object.keys(data).length > 3 ? '50%' : '30%',
           }
         },
       }}>
@@ -62,30 +62,6 @@ const View = ({ open, onClose, data }) => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Box mb={2} style={{ display: "flex" }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Dial Code</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.dialCode}</Typography>
-                </Box>
-              </Box>
-
-              <Box mb={2} style={{ display: "flex" }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>ISO Code</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.isoCode}</Typography>
-                </Box>
-              </Box>
-
-              <Box mb={2} style={{ display: "flex" }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Currency</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.currency}</Typography>
-                </Box>
-              </Box>
-
               <Box mb={2} style={{ display: "flex" }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>

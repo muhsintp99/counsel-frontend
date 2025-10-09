@@ -22,20 +22,75 @@ import { getCountry } from '../../../container/country/slice';
 import { getDomesticCourses } from '../../../container/courses/slice';
 import { getState } from '../../../container/states/slice';
 
+// const validationSchema = Yup.object({
+//   name: Yup.string().required('College name is required'),
+//   email: Yup.string().email('Invalid email').required('Email is required'),
+//   phone: Yup.string().required('Phone is required'),
+//   address: Yup.string().required('Address is required'),
+//   website: Yup.string().url('Invalid URL').nullable(),
+//   desc: Yup.string().nullable(),
+//   country: Yup.string().required('Country is required'),
+//   state: Yup.string().nullable(),
+//   category: Yup.array().of(Yup.string()).required('Select at least one category'),
+//   status: Yup.string().required('Status is required'),
+//   image: Yup.mixed().nullable(),
+//   courses: Yup.array().of(Yup.string()).nullable(),
+//   facilities: Yup.array().of(Yup.string()).nullable(),
+//   services: Yup.array().of(Yup.string()).nullable(),
+//   map: Yup.string().nullable(),
+//   visible: Yup.boolean().nullable(),
+// });
+
+
 const validationSchema = Yup.object({
   name: Yup.string().required('College name is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  phone: Yup.string().required('Phone is required'),
+  address: Yup.string().required('Address is required'),
+  website: Yup.string().url('Invalid URL').nullable(),
   desc: Yup.string().nullable(),
   country: Yup.string().required('Country is required'),
   state: Yup.string().nullable(),
-  category: Yup.array().of(Yup.string()).min(1, 'At least one category is required'),
+  category: Yup.array().of(Yup.string()).required('Select at least one category'),
   status: Yup.string().required('Status is required'),
-  image: Yup.mixed().nullable(),
+
+  // ✅ Image validations
+  image: Yup.mixed()
+    .nullable()
+    .test("fileSize", "Image must be less than 1MB", (value) => {
+      if (!value) return true; // allow null
+      return value.size <= 1 * 1024 * 1024; // 1MB
+    })
+    .test("fileFormat", "Only image files are allowed", (value) => {
+      if (!value) return true;
+      return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+    }),
+    // .test("aspectRatio", "Image must have 3:2 aspect ratio", (value) => {
+    //   if (!value) return true;
+    //   return new Promise((resolve) => {
+    //     const reader = new FileReader();
+    //     reader.onload = (e) => {
+    //       const img = new Image();
+    //       img.onload = () => {
+    //         const ratio = img.width / img.height;
+    //         const expectedRatio = 3 / 2;
+    //         const tolerance = 0.05; // 5% margin
+    //         resolve(Math.abs(ratio - expectedRatio) <= tolerance);
+    //       };
+    //       img.onerror = () => resolve(false);
+    //       img.src = e.target.result;
+    //     };
+    //     reader.readAsDataURL(value);
+    //   });
+    // }),
+
   courses: Yup.array().of(Yup.string()).nullable(),
   facilities: Yup.array().of(Yup.string()).nullable(),
   services: Yup.array().of(Yup.string()).nullable(),
   map: Yup.string().nullable(),
   visible: Yup.boolean().nullable(),
 });
+
 
 const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   const isEdit = Boolean(editData && editData._id);
@@ -60,13 +115,10 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     }
   }, [editData]);
 
-  const filteredCountries = countries.filter((country) => country.isDomestic === true);
-
   const india = countries.find(c => c.name === 'India');
 
   const initialValues = {
     name: editData?.name || '',
-    code: editData?.code || '',
     email: editData?.email || '',
     phone: editData?.phone || '',
     address: editData?.address || '',
@@ -74,10 +126,10 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
     desc: editData?.desc || '',
     country: editData?.country?._id || india?._id || '',
     state: editData?.state?._id || '',
-    category: editData?.category || [], 
+    category: editData?.category || [],   // ✅ multi-select
     status: editData?.status || '',
     image: null,
-    courses: editData?.domestic?.map((course) => course._id || course) || [],
+    courses: editData?.courses?.map((course) => course._id || course) || [],
     facilities: editData?.facilities || [],
     services: editData?.services || [],
     map: editData?.map || '',
@@ -88,13 +140,12 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   const handleSubmit = (values, { setSubmitting }) => {
     onSubmit({
       ...values,
-      courses: values.courses.map((course) => (typeof course === 'object' ? course._id : course)),
+      courses: values.courses.map((c) => (typeof c === 'object' ? c._id : c)),
+      category: Array.isArray(values.category) ? values.category : [values.category],
       isDomestic: true,
     });
     setSubmitting(false);
   };
-
-
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -109,6 +160,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
           <Form>
             <DialogContent>
               <Grid container spacing={3}>
+                {/* Name */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -120,17 +172,8 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.name && errors.name}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Field
-                    as={TextField}
-                    name="code"
-                    label="College Code *"
-                    fullWidth
-                    variant="outlined"
-                    error={touched.code && Boolean(errors.code)}
-                    helperText={touched.code && errors.code}
-                  />
-                </Grid>
+
+                {/* Email */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -142,6 +185,8 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.email && errors.email}
                   />
                 </Grid>
+
+                {/* Phone */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -153,44 +198,41 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.phone && errors.phone}
                   />
                 </Grid>
+
+                {/* Address */}
                 <Grid item xs={12}>
                   <Field
                     as={TextField}
                     name="address"
-                    label="Address *"
+                    label="Location *"
                     fullWidth
                     variant="outlined"
                     error={touched.address && Boolean(errors.address)}
                     helperText={touched.address && errors.address}
                   />
                 </Grid>
+
+                {/* Country (Fixed to India for domestic) */}
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth variant="outlined" error={touched.country && Boolean(errors.country)}>
+                  <FormControl fullWidth variant="outlined">
                     <InputLabel id="country-label">Country *</InputLabel>
                     <Field
                       as={Select}
                       name="country"
                       labelId="country-label"
-                      label="Country *"
                       value={values.country}
                       onChange={(e) => setFieldValue('country', e.target.value)}
                       disabled
                     >
-                      {filteredCountries.map((country) => (
-                        <MenuItem key={country._id} value={country._id}>
-                          {country.name}
-                        </MenuItem>
-                      ))}
+                      {india && (
+                        <MenuItem value={india._id}>{india.name}</MenuItem>
+                      )}
                     </Field>
-                    {touched.country && errors.country && (
-                      <Typography color="error" variant="caption">
-                        {errors.country}
-                      </Typography>
-                    )}
                   </FormControl>
                 </Grid>
 
-                {values.country && countries.find((c) => c._id === values.country && c.name === 'India') && (
+                {/* State (Only if India) */}
+                {values.country === india?._id && (
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel id="state-label">State</InputLabel>
@@ -198,7 +240,6 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                         as={Select}
                         labelId="state-label"
                         name="state"
-                        label="State"
                         value={values.state || ''}
                         onChange={(e) => setFieldValue('state', e.target.value)}
                       >
@@ -212,6 +253,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                   </Grid>
                 )}
 
+                {/* Website */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -223,37 +265,35 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     helperText={touched.website && errors.website}
                   />
                 </Grid>
+
+                {/* Category (Multi-Select) */}
                 <Grid item xs={12} sm={6}>
-  <FormControl fullWidth variant="outlined" error={touched.category && Boolean(errors.category)}>
-    <InputLabel id="category-label">Category *</InputLabel>
-    <Field
-      as={Select}
-      name="category"
-      labelId="category-label"
-      label="Category *"
-      multiple
-      value={values.category}
-      onChange={(e) => setFieldValue('category', e.target.value)}
-      renderValue={(selected) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {selected.map((cat) => (
-            <Chip key={cat} label={cat} />
-          ))}
-        </Box>
-      )}
-    >
-      <MenuItem value="Postgraduate">Postgraduate</MenuItem>
-      <MenuItem value="Graduate">Graduate</MenuItem>
-      <MenuItem value="PhD">PhD</MenuItem>
-      <MenuItem value="Diploma">Diploma</MenuItem>
-    </Field>
-    {touched.category && errors.category && (
-      <Typography color="error" variant="caption">
-        {errors.category}
-      </Typography>
-    )}
-  </FormControl>
-</Grid>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel id="category-label">Category *</InputLabel>
+                    <Field
+                      as={Select}
+                      name="category"
+                      labelId="category-label"
+                      multiple
+                      value={values.category}
+                      onChange={(e) => setFieldValue('category', e.target.value)}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((cat) => (
+                            <Chip key={cat} label={cat} />
+                          ))}
+                        </Box>
+                      )}
+                    >
+                      <MenuItem value="Postgraduate">Postgraduate</MenuItem>
+                      <MenuItem value="Graduate">Graduate</MenuItem>
+                      <MenuItem value="PhD">PhD</MenuItem>
+                      <MenuItem value="Diploma">Diploma</MenuItem>
+                    </Field>
+                  </FormControl>
+                </Grid>
+
+                {/* Status */}
                 <Grid item xs={12} sm={6}>
                   <Field
                     as={TextField}
@@ -271,14 +311,15 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     <MenuItem value="regular">Regular</MenuItem>
                   </Field>
                 </Grid>
+
+                {/* Courses */}
                 <Grid item xs={12}>
-                  <FormControl fullWidth variant="outlined" error={touched.courses && Boolean(errors.courses)}>
+                  <FormControl fullWidth variant="outlined">
                     <InputLabel id="courses-label">Courses</InputLabel>
                     <Field
                       as={Select}
                       name="courses"
                       labelId="courses-label"
-                      label="Courses"
                       multiple
                       value={values.courses}
                       onChange={(e) => setFieldValue('courses', e.target.value)}
@@ -297,14 +338,10 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                         </MenuItem>
                       ))}
                     </Field>
-                    {touched.courses && errors.courses && (
-                      <Typography color="error" variant="caption">
-                        {errors.courses}
-                      </Typography>
-                    )}
                   </FormControl>
                 </Grid>
 
+                {/* Description */}
                 <Grid item xs={12}>
                   <Field
                     as={TextField}
@@ -314,28 +351,11 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     variant="outlined"
                     multiline
                     rows={4}
-                    error={touched.desc && Boolean(errors.desc)}
-                    helperText={touched.desc && errors.desc}
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="domestic-label">Domestic</InputLabel>
-                    <Field
-                      as={Select}
-                      labelId="domestic-label"
-                      name="isDomestic"
-                      label="Domestic"
-                      disabled
-                    >
-                      <MenuItem value={true}>Yes</MenuItem>
-                      <MenuItem value={false}>No</MenuItem>
-                    </Field>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
+                {/* Image Upload */}
+                <Grid item xs={12} sm={12} lg={12}>
                   <Box>
                     <Typography variant="body2" sx={{ mb: 1 }}>
                       College Image
@@ -346,6 +366,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                       onChange={(event) => {
                         const file = event.currentTarget.files[0];
                         setFieldValue('image', file);
+
                         if (file) {
                           const reader = new FileReader();
                           reader.onloadend = () => {
@@ -356,27 +377,26 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                           setPreviewImage(null);
                         }
                       }}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                      }}
                     />
+                    {/* ✅ Show Yup validation errors under field */}
                     {touched.image && errors.image && (
-                      <Typography color="error" variant="caption">
+                      <Typography variant="caption" color="error" sx={{ display: 'block', mt: 0.5 }}>
                         {errors.image}
                       </Typography>
                     )}
+                    {/* Optional static hint */}
+                    <Typography variant="caption" color="textSecondary">
+                      Image must be less than 1MB & 3:2 aspect ratio
+                    </Typography>
                   </Box>
                 </Grid>
 
+
+                {/* Preview */}
                 {previewImage && (
                   <Grid item xs={12}>
                     <Box>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Preview:
-                      </Typography>
+                      <Typography variant="body2">Preview:</Typography>
                       <img
                         src={previewImage}
                         alt="College Preview"
@@ -394,9 +414,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
               </Grid>
             </DialogContent>
             <DialogActions sx={{ p: 3 }}>
-              <Button onClick={onClose} variant="outlined">
-                Cancel
-              </Button>
+              <Button onClick={onClose} variant="outlined">Cancel</Button>
               <Button type="submit" variant="contained" disabled={isSubmitting} sx={{ ml: 2 }}>
                 {isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Add'}
               </Button>

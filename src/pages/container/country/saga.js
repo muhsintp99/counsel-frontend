@@ -22,7 +22,6 @@ function* getCountrySaga() {
   }
 }
 
-
 // GET Country By ID
 function* getCountryByIdSaga(action) {
   try {
@@ -30,8 +29,6 @@ function* getCountryByIdSaga(action) {
       api: `${config.configApi}/countries/${action.payload}`,
       method: 'GET',
       authorization: false,
-      successAction: actions.addCountrySuccess,
-      failAction: actions.getCountryByIdFail
     };
     const response = yield call(commonApi, params);
     const country = response.data || response;
@@ -45,19 +42,12 @@ function* getCountryByIdSaga(action) {
 // ADD Country
 function* addCountrySaga(action) {
   try {
-    const { name, code, isoCode, dialCode, currency, image } = action.payload;
+    const { name, code, image } = action.payload;
     const formData = new FormData();
     formData.append('name', name || '');
     formData.append('code', code || '');
-    formData.append('isoCode', isoCode || '');
-    formData.append('dialCode', dialCode || '');
-    formData.append('currency', currency || '');
     if (image) {
       formData.append('image', image);
-    }
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
     }
 
     const params = {
@@ -65,16 +55,14 @@ function* addCountrySaga(action) {
       method: 'POST',
       authorization: 'Bearer',
       body: formData,
-      successAction: actions.addCountrySuccess,
-      failAction: actions.addCountryFail
     };
 
     yield call(commonApi, params);
-    yield put(actions.getCountry());// Refresh the list after adding
+    yield put(actions.getCountry()); // refresh list
     toast.success('Country added successfully');
   } catch (error) {
     console.error('Add Country Error:', error);
-    yield put(actions.addCountryFail(error.message || 'Error while adding country'));
+    yield put(actions.addCountryFail(error.message));
     toast.error(error.message || 'Failed to add country');
   }
 }
@@ -83,26 +71,18 @@ function* addCountrySaga(action) {
 function* updateCountrySaga(action) {
   try {
     const { id, data } = action.payload;
-    const { name, code, isoCode, dialCode, currency, image } = data;
+    const { name, code, image } = data;
+
     const formData = new FormData();
     if (name) formData.append('name', name);
     if (code) formData.append('code', code);
-    if (isoCode) formData.append('isoCode', isoCode);
-    if (dialCode) formData.append('dialCode', dialCode);
-    if (currency) formData.append('currency', currency);
     if (image) formData.append('image', image);
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
 
     const params = {
       api: `${config.configApi}/countries/${id}`,
       method: 'PUT',
       body: formData,
       authorization: 'Bearer',
-      successAction: actions.updateCountrySuccess,
-      failAction: actions.updateCountryFail
     };
 
     yield call(commonApi, params);
@@ -116,41 +96,13 @@ function* updateCountrySaga(action) {
 }
 
 // DELETE Country
-// function* deleteCountrySaga(action) {
-//   try {
-//     const params = {
-//       api: `${config.configApi}/countries/${action.payload}`,
-//       method: 'DELETE',
-//       authorization: 'Bearer',
-//       successAction: actions.deleteCountrySuccess,
-//       failAction: actions.deleteCountryFail
-//     };
-//     yield call(commonApi, params);
-//     yield put(actions.deleteCountrySuccess(action.payload));
-//      yield put(actions.getCountry());
-//     toast.success('Country deleted successfully');
-//   } catch (error) {
-//     console.error('Delete Country Error:', error);
-//     yield put(actions.deleteCountryFail(error.message));
-//     toast.error(error.message || 'Delete failed');
-//   }
-// }
-
 function* deleteCountrySaga(action) {
   try {
-    const { id, name } = action.payload;
-
-    if (name?.toLowerCase() === 'india') {
-      toast.error('Cannot delete India');
-      return;
-    }
-
+    const id = action.payload;
     const params = {
-      api: `${config.configApi}/countries/${action.payload}`,
+      api: `${config.configApi}/countries/${id}`,
       method: 'DELETE',
       authorization: 'Bearer',
-      successAction: actions.deleteCountrySuccess,
-      failAction: actions.deleteCountryFail,
     };
 
     yield call(commonApi, params);
@@ -163,7 +115,6 @@ function* deleteCountrySaga(action) {
     toast.error(error.message || 'Failed to delete country');
   }
 }
-
 
 // GET Country Count
 function* totalCountSaga() {

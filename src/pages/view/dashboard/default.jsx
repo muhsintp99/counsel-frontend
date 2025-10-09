@@ -333,6 +333,8 @@ import {
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+
+// Redux actions
 import { getEnquiryCount } from '../../container/enquries/slice';
 import { getFollowUps } from '../../container/follow-up/slice';
 import { getContacts } from '../../container/contact/slice';
@@ -346,36 +348,38 @@ import { getIntakes } from '../../container/intake/slice';
 export default function DashboardDefault() {
   const dispatch = useDispatch();
 
-  // State selectors
-  const { enquiryCount } = useSelector((state) => state.enquiries);
-  const { followUps } = useSelector((state) => state.followUp);
-  const { contacts } = useSelector((state) => state.contact);
-  const { allCourses } = useSelector((state) => state.courses); // ✅ updated name
-  const { colleges } = useSelector((state) => state.domesticColleges);
-  const { intakes } = useSelector((state) => state.intakes);
-  const { blogs } = useSelector((state) => state.blog);
-  const { galleries } = useSelector((state) => state.gallery);
+  // ✅ Safe Redux selectors with default fallbacks
+  const { enquiryCount = 0 } = useSelector((state) => state.enquiries || {});
+  const { followUps = [] } = useSelector((state) => state.followUp || {});
+  const { contacts = [] } = useSelector((state) => state.contact || {});
+  const { allCourses = [] } = useSelector((state) => state.courses || {});
+  const { colleges = [] } = useSelector((state) => state.domesticColleges || {});
+  const { intakes = [] } = useSelector((state) => state.intakes || {});
+  const { blogs = [] } = useSelector((state) => state.blog || {});
+  const { galleries = [] } = useSelector((state) => state.gallery || {});
 
+  // ✅ Fetch data once on mount
   useEffect(() => {
-    if (!enquiryCount) dispatch(getEnquiryCount());
-    if (!followUps.length) dispatch(getFollowUps());
-    if (!contacts.length) dispatch(getContacts());
-    if (!allCourses.length) dispatch(getAllCourses()); // ✅ only once
-    if (!colleges.length) dispatch(getAllColleges());
-    if (!intakes.length) dispatch(getIntakes());
-    if (!blogs.length) dispatch(getBlog());
-    if (!galleries.length) dispatch(getGalleries());
+    dispatch(getEnquiryCount());
+    dispatch(getFollowUps());
+    dispatch(getContacts());
+    dispatch(getAllCourses());
+    dispatch(getAllColleges());
+    dispatch(getIntakes());
+    dispatch(getBlog());
+    // dispatch(getGalleries());
   }, [dispatch]);
 
-  // Metric counts
-  const followUpCount = followUps?.length || 0;
-  const contactsCount = contacts?.length || 0;
-  const coursesCount = allCourses?.length || 0;
-  const collegesCount = colleges?.length || 0;
-  const intakesCount = intakes?.length || 0;
-  const blogsCount = blogs?.length || '-';
-  const galleriesCount = galleries?.length || '-';
+  // ✅ Count metrics with fallbacks
+  const followUpCount = followUps?.length ?? 0;
+  const contactsCount = contacts?.length ?? 0;
+  const coursesCount = allCourses?.length ?? 0;
+  const collegesCount = colleges?.length ?? 0;
+  const intakesCount = intakes?.length ?? 0;
+  const blogsCount = blogs?.length ?? 0;
+  // const galleriesCount = galleries?.length ?? 0;
 
+  // Example previous comparison data (static)
   const previousData = {
     enquiries: 1000,
     followUps: 800,
@@ -384,9 +388,10 @@ export default function DashboardDefault() {
     colleges: 1,
     intakes: 5,
     blogs: 5,
-    galleries: 5
+    // galleries: 5
   };
 
+  // ✅ Safe percentage calculation
   const getMetric = (current, previous) => {
     const percent = previous ? ((current - previous) / previous) * 100 : 0;
     const isLoss = percent < 0;
@@ -394,52 +399,56 @@ export default function DashboardDefault() {
     return { percent: parseFloat(percent.toFixed(2)), isLoss, color };
   };
 
+  // ✅ Main metric cards
   const metrics = [
     {
       title: 'Enquiries',
-      count: enquiryCount.toString(),
+      count: String(enquiryCount ?? 0),
       icon: Assignment,
-      ...getMetric(enquiryCount, previousData.enquiries)
+      ...getMetric(enquiryCount || 0, previousData.enquiries)
     },
     {
       title: 'Follow Ups',
-      count: followUpCount.toString(),
+      count: String(followUpCount ?? 0),
       icon: QuestionAnswer,
       ...getMetric(followUpCount, previousData.followUps)
     },
     {
       title: 'Contacts',
-      count: contactsCount.toString(),
+      count: String(contactsCount ?? 0),
       icon: Contacts,
       ...getMetric(contactsCount, previousData.contacts)
     },
     {
       title: 'Courses',
-      count: coursesCount.toString(),
+      count: String(coursesCount ?? 0),
       icon: School,
       ...getMetric(coursesCount, previousData.courses)
     },
     {
       title: 'Colleges',
-      count: collegesCount.toString(),
+      count: String(collegesCount ?? 0),
       icon: Business,
       ...getMetric(collegesCount, previousData.colleges)
     },
     {
       title: 'Intakes',
-      count: intakesCount.toString(),
+      count: String(intakesCount ?? 0),
       icon: SpaceDashboard,
+      ...getMetric(intakesCount, previousData.intakes)
     },
     {
       title: 'Blogs',
-      count: blogsCount.toString(),
+      count: String(blogsCount ?? 0),
       icon: RssFeed,
+      ...getMetric(blogsCount, previousData.blogs)
     },
-    {
-      title: 'Gallery',
-      count: galleriesCount.toString(),
-      icon: Collections,
-    }
+    // {
+    //   title: 'Gallery',
+    //   count: String(galleriesCount ?? 0),
+    //   icon: Collections,
+    //   ...getMetric(galleriesCount, previousData.galleries)
+    // }
   ];
 
   return (
@@ -458,6 +467,8 @@ export default function DashboardDefault() {
           </Grid>
         ))}
       </Grid>
+
+      {/* ✅ Table Section */}
       <Grid container spacing={2} mt={3}>
         <Grid item md={12} lg={12}>
           <OrdersTable />

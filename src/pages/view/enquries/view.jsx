@@ -18,6 +18,8 @@ import {
   CardContent,
   useTheme,
   useMediaQuery,
+  Chip,
+  Divider,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector } from 'react-redux';
@@ -27,6 +29,37 @@ const View = ({ open, onClose, data }) => {
   const { loading, error } = useSelector((state) => state.enquiries);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Helper to safely extract field values
+  const safeGet = (field) => (field ? field : 'N/A');
+
+  // Function to get chip color based on lead quality
+  const getLeadQualityColor = (quality) => {
+    switch (quality) {
+      case 'High':
+        return 'success';
+      case 'Medium':
+        return 'warning';
+      case 'Low':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  // Function to get chip color based on status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Open':
+        return 'info';
+      case 'Closed':
+        return 'success';
+      case 'Pending':
+        return 'warning';
+      default:
+        return 'default';
+    }
+  };
 
   return (
     <Dialog
@@ -39,11 +72,13 @@ const View = ({ open, onClose, data }) => {
         sx: {
           margin: isMobile ? 1 : 3,
           maxHeight: '90vh',
+          borderRadius: 2,
+          boxShadow: 24,
         },
       }}
     >
-      <DialogTitle id="view-enquiry-dialog-title">
-        Enquiry Details
+      <DialogTitle id="view-enquiry-dialog-title" sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>
+        Enquiry Details - {safeGet(data.enqNo)}
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -51,13 +86,14 @@ const View = ({ open, onClose, data }) => {
             position: 'absolute',
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            color: 'white',
           }}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers sx={{ p: isMobile ? 2 : 3 }}>
+
+      <DialogContent dividers sx={{ p: isMobile ? 2 : 3, overflowY: 'auto' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" py={4}>
             <CircularProgress />
@@ -66,217 +102,147 @@ const View = ({ open, onClose, data }) => {
           <Typography color="error">Error: {error}</Typography>
         ) : data ? (
           <Box>
-            <Card sx={{ mb: 3, backgroundColor: theme.palette.grey[50] }}>
+            {/* --- Top Card Section --- */}
+            <Card sx={{ mb: 3, borderRadius: 2, boxShadow: 3 }}>
               <CardContent>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} md={3}>
                     <Typography variant="caption" color="textSecondary">
-                      Enquiry No
-                    </Typography>
-                    <Typography variant="h6" color="primary">
-                      {data.enqNo || 'N/A'}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Typography variant="caption" color="textSecondary">
                       Name
                     </Typography>
-                    <Typography variant="h6">
-                      {data.fName || 'N/A'}
-                    </Typography>
+                    <Typography variant="h6">{safeGet(data.fName)}</Typography>
                   </Grid>
+
                   <Grid item xs={12} sm={6} md={3}>
                     <Typography variant="caption" color="textSecondary">
                       Phone
                     </Typography>
                     <Typography variant="h6">
                       {data.mobile ? (
-                        <Typography
-                          component="a"
+                        <a
                           href={`tel:${data.mobile}`}
-                          variant="h6"
-                          sx={{
-                            color: 'primary.main',
+                          style={{
+                            color: theme.palette.primary.main,
                             textDecoration: 'none',
-                            '&:hover': {
-                              textDecoration: 'underline',
-                              color: 'primary.dark',
-                            },
                           }}
                         >
                           {data.mobile}
-                        </Typography>
+                        </a>
                       ) : (
                         'N/A'
                       )}
                     </Typography>
                   </Grid>
+
                   <Grid item xs={12} sm={6} md={3}>
                     <Typography variant="caption" color="textSecondary">
                       Email
                     </Typography>
                     <Typography variant="h6" sx={{ wordBreak: 'break-word' }}>
                       {data.email ? (
-                        <Typography
-                          component="a"
+                        <a
                           href={`mailto:${data.email}`}
-                          variant="h6"
-                          sx={{
-                            color: 'primary.main',
+                          style={{
+                            color: theme.palette.primary.main,
                             textDecoration: 'none',
-                            wordBreak: 'break-word',
-                            '&:hover': {
-                              textDecoration: 'underline',
-                              color: 'primary.dark',
-                            },
                           }}
                         >
                           {data.email}
-                        </Typography>
+                        </a>
                       ) : (
                         'N/A'
                       )}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+
+                  <Grid item xs={12} sm={6} md={3}>
                     <Typography variant="caption" color="textSecondary">
                       Location
                     </Typography>
-                    <Typography variant="h6">
-                      {data.location || 'N/A'}
-                    </Typography>
+                    <Typography variant="h6">{safeGet(data.location)}</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
 
-            <TableContainer component={Paper} variant="outlined">
+            <Divider sx={{ my: 2 }} />
+
+            {/* --- Enquiry Info Section --- */}
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+              Enquiry Information
+            </Typography>
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2, boxShadow: 1 }}>
               <Table>
                 <TableBody>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        width: isMobile ? '35%' : '25%',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
+                  <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover } }}>
+                    <TableCell sx={{ fontWeight: 'bold', width: '40%' }}>
                       Lead Quality
                     </TableCell>
-                    <TableCell sx={{ wordBreak: 'break-word' }}>
-                      {data.leadQuality || 'N/A'}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
-                      Category
-                    </TableCell>
                     <TableCell>
-                      {data.category || 'N/A'}
+                      <Chip
+                        label={safeGet(data.leadQuality)}
+                        color={getLeadQualityColor(safeGet(data.leadQuality))}
+                        variant="outlined"
+                      />
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
+
+                  <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover } }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
                       Course
                     </TableCell>
                     <TableCell>
-                      {data.course.title || 'N/A'}
+                      {typeof data.course === 'object'
+                        ? data.course?.title || 'N/A'
+                        : safeGet(data.course)}
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
+
+                  <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover } }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
                       School
                     </TableCell>
                     <TableCell>
-                      {data.school.name || 'N/A'}
+                      {typeof data.school === 'object'
+                        ? data.school?.name || 'N/A'
+                        : safeGet(data.school)}
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
-                      Looking For
+
+                  <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover } }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      Status
                     </TableCell>
-                    <TableCell sx={{ wordBreak: 'break-word' }}>
-                      {data.lookingFor || 'N/A'}
+                    <TableCell>
+                      <Chip
+                        label={safeGet(data.status)}
+                        color={getStatusColor(safeGet(data.status))}
+                        variant="outlined"
+                      />
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
+
+                  <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover } }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
                       Enquiry Description
                     </TableCell>
                     <TableCell sx={{ wordBreak: 'break-word' }}>
-                      {data.enqDescp || 'N/A'}
+                      {safeGet(data.enqDescp)}
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
+
+                  <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: theme.palette.action.hover } }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
                       Remarks
                     </TableCell>
                     <TableCell sx={{ wordBreak: 'break-word' }}>
-                      {data.remarks || 'N/A'}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 'bold',
-                        backgroundColor: theme.palette.grey[100],
-                      }}
-                    >
-                      Created At
-                    </TableCell>
-                    <TableCell>
-                      {FormatDate(data.createdAt)}
+                      {safeGet(data.remarks)}
                     </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
+            
           </Box>
         ) : (
           <Typography>No data available</Typography>

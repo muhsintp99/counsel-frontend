@@ -225,4 +225,3 @@ export const {
 } = countrySlice.actions;
 
 export default countrySlice.reducer;
-

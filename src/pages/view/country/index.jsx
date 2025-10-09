@@ -69,41 +69,20 @@ const Index = () => {
     setOpenDeleteDialog(true);
   };
 
-  // const handleDeleteConfirm = (data) => {
-  //   if (data && data._id) {
-  //     dispatch(deleteCountry(data._id));
-  //     setOpenDeleteDialog(false);
-  //     setDeleteData(null);
-  //     dispatch(getCountry());
-  //   }
-  // };
-
   const handleDeleteConfirm = (data) => {
-    if (data && data.name?.toLowerCase() === 'india') {
-      alert('Cannot delete India');
-      setOpenDeleteDialog(false);
-      setDeleteData(null);
-      return;
-    }
+    setOpenDeleteDialog(false);
+    setDeleteData(null);
 
     if (data && data._id) {
       dispatch(deleteCountry(data._id));
-      setOpenDeleteDialog(false);
-      setDeleteData(null);
       dispatch(getCountry());
     }
   };
 
-
   const handleSubmitForm = (values) => {
-    // console.log('Form Values:', values);
-
     const payload = {
-      name: values.countryName || values.name || '',
-      code: values.code || values.countryCode || '',
-      isoCode: values.isoCode || '',
-      dialCode: values.dialCode || '',
-      currency: values.currency || '',
+      name: values.name || '',
+      code: values.code || '',
       image: values.image || '',
     };
 
@@ -126,8 +105,7 @@ const Index = () => {
     return validCountries
       .filter((item) =>
         (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.code || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.isoCode || '').toLowerCase().includes(searchQuery.toLowerCase())
+        (item.code || '').toLowerCase().includes(searchQuery.toLowerCase())
       )
       .map((item, index) => ({
         ...item,
@@ -158,8 +136,6 @@ const Index = () => {
     },
     { field: 'name', headerName: 'Country Name', flex: 1 },
     { field: 'code', headerName: 'Country Code', flex: 1 },
-    { field: 'isoCode', headerName: 'ISO Code', flex: 1 },
-    { field: 'dialCode', headerName: 'Dial Code', flex: 1 },
     {
       field: 'isDomestic',
       headerName: 'Region Type',
@@ -176,27 +152,20 @@ const Index = () => {
       flex: 1,
       sortable: false,
       renderCell: (params) => {
-        const countryName = params.row.name?.toLowerCase();
-        const isIndia = countryName === 'india';
-
         return (
           <>
             <EyeOutlined
               style={pageStyles.viewIcon}
               onClick={() => handleView(params.row)}
             />
-            {!isIndia && (
-              <>
-                <FormOutlined
-                  style={pageStyles.editIcon}
-                  onClick={() => handleEdit(params.row)}
-                />
-                <DeleteOutlined
-                  style={pageStyles.deleteIcon}
-                  onClick={() => handleDelete(params.row)}
-                />
-              </>
-            )}
+            <FormOutlined
+              style={pageStyles.editIcon}
+              onClick={() => handleEdit(params.row)}
+            />
+            <DeleteOutlined
+              style={pageStyles.deleteIcon}
+              onClick={() => handleDelete(params.row)}
+            />
           </>
         );
       },

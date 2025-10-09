@@ -1,3 +1,4 @@
+// slice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const internationalCollegeSlice = createSlice({
@@ -17,6 +18,8 @@ const internationalCollegeSlice = createSlice({
     clearSelectedCollege: (state) => {
       state.selectedCollege = null;
     },
+
+    // --- Add
     addCollege: (state) => {
       state.loading = true;
       state.error = null;
@@ -31,6 +34,8 @@ const internationalCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // --- Get All
     getColleges: (state) => {
       state.loading = true;
       state.error = null;
@@ -46,6 +51,8 @@ const internationalCollegeSlice = createSlice({
       state.error = action.payload;
       state.colleges = [];
     },
+
+    // --- Get One
     getCollegeById: (state) => {
       state.loading = true;
       state.error = null;
@@ -59,6 +66,8 @@ const internationalCollegeSlice = createSlice({
       state.error = action.payload;
       state.selectedCollege = null;
     },
+
+    // --- Count
     totalCount: (state) => {
       state.loading = true;
       state.error = null;
@@ -71,6 +80,8 @@ const internationalCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // --- Update
     updateCollege: (state) => {
       state.loading = true;
       state.error = null;
@@ -92,6 +103,8 @@ const internationalCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // --- Soft Delete
     softDeleteCollege: (state) => {
       state.loading = true;
       state.error = null;
@@ -110,6 +123,8 @@ const internationalCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // --- Hard Delete
     deleteCollege: (state) => {
       state.loading = true;
       state.error = null;

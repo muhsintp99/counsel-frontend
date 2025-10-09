@@ -14,7 +14,7 @@ const validationSchema = Yup.object({
     .required('State code is required')
     .min(2, 'Code must be at least 2 characters')
     .max(5, 'Code must be at most 5 characters'),
-  desc: Yup.string().required('Description is required'),
+  desc: Yup.string(),
   isActive: Yup.boolean().required('Status is required'),
 });
 

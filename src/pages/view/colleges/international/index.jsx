@@ -39,20 +39,17 @@ const Index = () => {
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
 
   const dispatch = useDispatch();
-  const { colleges, loading, error } = useSelector((state) => state.internationalColleges);
+  const { colleges, loading, error, collegeCount } = useSelector(
+    (state) => state.internationalColleges
+  );
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const title = 'International Colleges';
 
   useEffect(() => {
-    // console.log('Dispatching getColleges for international');
-    dispatch(getColleges({ domestic: false }));
+    dispatch(getColleges({ isDomestic: false }));
   }, [dispatch]);
-
-  // useEffect(() => {
-  //   console.log('International colleges state updated:', { colleges, loading, error });
-  // }, [colleges, loading, error]);
 
   const handleOpenDialog = (college = null) => {
     setSelectedCollege(college);
@@ -109,9 +106,7 @@ const Index = () => {
       return (
         String(item.name || '').toLowerCase().includes(search) ||
         String(item.code || '').toLowerCase().includes(search) ||
-        String(item.email || '').toLowerCase().includes(search) ||
-        String(item.phone || '').toLowerCase().includes(search) ||
-        String(item.address || '').toLowerCase().includes(search) ||
+        String(item.location || '').toLowerCase().includes(search) ||
         String(item.country?.name || '').toLowerCase().includes(search) ||
         item.courses?.some((course) => String(course.title || '').toLowerCase().includes(search))
       );
@@ -120,9 +115,14 @@ const Index = () => {
 
   return (
     <Box sx={pageStyles.mainBox}>
-      <Typography variant="h4" sx={pageStyles.title}>{title}</Typography>
+      <Typography variant="h4" sx={pageStyles.title}>
+        {title}
+      </Typography>
       <Typography component="p" sx={pageStyles.countList}>
-        <span style={{ color: '#234155', fontWeight: 600 }}>{colleges.length} {title}</span> are listed below
+        <span style={{ color: '#234155', fontWeight: 600 }}>
+          {collegeCount || filteredColleges.length} {title}
+        </span>{' '}
+        are listed below
       </Typography>
 
       {error && (
@@ -135,7 +135,7 @@ const Index = () => {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Search by Name, Code, Email, Phone, Address, Country, or Course"
+          placeholder="Search by Name, Code, Location, Country, or Course"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
@@ -157,11 +157,7 @@ const Index = () => {
             },
           }}
         />
-        <Button
-          variant="contained"
-          onClick={() => handleOpenDialog()}
-          sx={{ mt: 2, ml: 2 }}
-        >
+        <Button variant="contained" onClick={() => handleOpenDialog()} sx={{ mt: 2, ml: 2 }}>
           Add International College
         </Button>
       </Box>
@@ -184,36 +180,23 @@ const Index = () => {
             <Card sx={{ boxShadow: 3 }}>
               <CardContent>
                 <Typography variant="h6">{college.name}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Code: {college.code}
-                </Typography>
               </CardContent>
               <CardMedia
                 sx={{ height: 140, padding: '0px 10px' }}
-                image={college.image}
+                image={college.image || '/public/defult/picture.png'}
                 component="img"
                 title="College Image"
               />
               <CardContent>
                 <Typography variant="body2" color="text.secondary">
-                  Email: {college.email || 'N/A'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Phone: {college.phone || 'N/A'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Address: {college.address || 'N/A'}
+                  Location: {college.location || 'N/A'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Country: {college.country?.name || 'N/A'}
                 </Typography>
               </CardContent>
               <CardActions sx={{ display: 'flex', justifyContent: 'space-around' }}>
-                <Button
-                  size="small"
-                  startIcon={<EyeOutlined />}
-                  onClick={() => handleView(college)}
-                >
+                <Button size="small" startIcon={<EyeOutlined />} onClick={() => handleView(college)}>
                   View
                 </Button>
                 <Button
@@ -233,29 +216,21 @@ const Index = () => {
                 </Button>
               </CardActions>
             </Card>
-          </Grid>
+  </Grid>
         ))}
       </Grid>
 
-      <AddEdit
-        open={openDialog}
-        onClose={handleCloseDialog}
-        onSubmit={handleSubmit}
-        editData={selectedCollege}
-      />
+      <AddEdit open={openDialog} onClose={handleCloseDialog} onSubmit={handleSubmit} editData={selectedCollege} />
 
-      {viewData && (
-        <View
-          open={isViewOpen}
-          onClose={handleViewClose}
-          data={viewData}
-        />
-      )}
+      {viewData && <View open={isViewOpen} onClose={handleViewClose} data={viewData} />}
 
       <Dialog open={deleteDialog.open} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <Typography>Do you want to soft delete (mark as deleted) or permanently delete this international college?</Typography>
+          <Typography>
+            Do you want to soft delete (mark as deleted) or permanently delete this international
+            college?
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog}>Cancel</Button>

@@ -45,14 +45,10 @@ const Index = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const title = 'Domestic Colleges';
 
- useEffect(() => {
-  dispatch(getColleges({ domestic: true }));
-}, [dispatch]);
-
-
-  // useEffect(() => {
-  //   console.log('Domestic colleges state updated:', { colleges, loading, error });
-  // }, [colleges, loading, error]);
+  // ✅ Load only domestic colleges
+  useEffect(() => {
+    dispatch(getColleges({ isDomestic: true }));
+  }, [dispatch]);
 
   const handleOpenDialog = (college = null) => {
     setSelectedCollege(college);
@@ -82,21 +78,25 @@ const Index = () => {
     setDeleteDialog({ open: false, id: null });
   };
 
+  // ✅ Delete with refresh
   const handleDelete = (id, isSoftDelete) => {
     if (isSoftDelete) {
       dispatch(softDeleteCollege(id));
     } else {
       dispatch(deleteCollege(id));
     }
+    dispatch(getColleges({ isDomestic: true }));
     handleCloseDeleteDialog();
   };
 
+  // ✅ Add or Update with refresh
   const handleSubmit = (values) => {
     if (selectedCollege && selectedCollege._id) {
       dispatch(updateCollege({ id: selectedCollege._id, ...values }));
     } else {
       dispatch(addCollege(values));
     }
+    dispatch(getColleges({ isDomestic: true }));
     handleCloseDialog();
   };
 
@@ -108,7 +108,6 @@ const Index = () => {
       const search = searchQuery.toLowerCase();
       return (
         String(item.name || '').toLowerCase().includes(search) ||
-        String(item.code || '').toLowerCase().includes(search) ||
         String(item.email || '').toLowerCase().includes(search) ||
         String(item.phone || '').toLowerCase().includes(search) ||
         String(item.address || '').toLowerCase().includes(search) ||
@@ -184,9 +183,6 @@ const Index = () => {
             <Card sx={{ boxShadow: 3 }}>
               <CardContent>
                 <Typography variant="h6">{college.name}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Code: {college.code}
-                </Typography>
               </CardContent>
               <CardMedia
                 sx={{ height: 140, padding: '0px 10px' }}
@@ -255,7 +251,9 @@ const Index = () => {
       <Dialog open={deleteDialog.open} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <Typography>Do you want to soft delete (mark as deleted) or permanently delete this Domestic college?</Typography>
+          <Typography>
+            Do you want to soft delete (mark as deleted) or permanently delete this Domestic college?
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog}>Cancel</Button>

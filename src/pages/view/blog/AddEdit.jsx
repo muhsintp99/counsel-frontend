@@ -9,59 +9,61 @@ import {
   Grid,
   Box,
   Typography,
-  FormControlLabel,
-  Checkbox
 } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
-// Validation schema based on blog schema
-const validationSchema = Yup.object({
-  title: Yup.string().required('Title is required'),
-  shortDesc: Yup.string().required('Short Description is required'),
-  fullDesc: Yup.string().required('Full Description is required'),
-  link: Yup.string()
-    .nullable()
-    .matches(
-      /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.]*)*\/?$/,
-      { message: 'Enter a valid URL', excludeEmptyString: true }
-    ),
-  image: Yup.mixed()
-    .required('Image is required')
-    .test('fileType', 'Only image files are allowed (jpeg, jpg, png, gif)', (value) => {
-      if (!value) return false; // Image is required
-      return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
-    }),
-  createdBy: Yup.string().default('admin'),
-  updatedBy: Yup.string().default('admin'),
-  isVisible: Yup.boolean().default(true), // Added visibility validation
-});
-
 const AddEdit = ({ open, onClose, onSubmit, editData }) => {
   const isEdit = Boolean(editData && editData._id);
   const [previewImage, setPreviewImage] = useState(null);
+  const [fileName, setFileName] = useState('');
 
   useEffect(() => {
     if (editData?.image) {
       setPreviewImage(editData.image);
+      setFileName(editData.image.split('/').pop());
     } else {
       setPreviewImage(null);
+      setFileName('');
     }
   }, [editData]);
+
+  const validationSchema = Yup.object({
+    title: Yup.string().required('Title is required'),
+    shortDesc: Yup.string().required('Short Description is required'),
+    fullDesc: Yup.string().required('Full Description is required'),
+    link: Yup.string()
+      .nullable()
+      .matches(
+        /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.]*)*\/?$/,
+        { message: 'Enter a valid URL', excludeEmptyString: true }
+      ),
+    image: Yup.mixed().test(
+      'fileType',
+      'Only image files are allowed (jpeg, jpg, png, gif)',
+      function (value) {
+        if (!value && editData?.image) return true;
+        if (!value && !editData) return false;
+        if (!value) return true;
+        return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
+      }
+    ),
+  });
+
 
   const initialValues = {
     title: editData?.title || '',
     shortDesc: editData?.shortDesc || '',
     fullDesc: editData?.fullDesc || '',
     link: editData?.link || '',
-    createdBy: editData?.createdBy || 'admin',
-    updatedBy: editData?.updatedBy || 'admin',
-    isVisible: editData?.isVisible !== undefined ? editData.isVisible : true, // Added visibility field
-    image: null
+    image: null,
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
-    // console.log('Form submission values:', values);
+    // If editing and no new file selected, keep old image
+    if (isEdit && !values.image && previewImage) {
+      values.image = previewImage;
+    }
     onSubmit(values);
     setSubmitting(false);
   };
@@ -129,78 +131,71 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                     label="Link"
                     fullWidth
                     variant="outlined"
-                    placeholder="e.g., https://example.com"
+                    placeholder="https://example.com"
                     error={touched.link && Boolean(errors.link)}
                     helperText={touched.link && errors.link}
                   />
                 </Grid>
 
-                {/* Visibility Checkbox */}
-                {/* <Grid item xs={12} sm={6}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                    <FormControlLabel
-                      control={
-                        <Field name="isVisible">
-                          {({ field }) => (
-                            <Checkbox
-                              {...field}
-                              checked={values.isVisible}
-                              onChange={(e) => setFieldValue('isVisible', e.target.checked)}
-                              color="primary"
-                            />
-                          )}
-                        </Field>
-                      }
-                      label={
-                        <Typography variant="body1">
-                          Make blog visible to public
-                        </Typography>
-                      }
-                    />
-                  </Box>
-                  <Typography variant="caption" color="textSecondary" sx={{ ml: 4, display: 'block' }}>
-                    {values.isVisible ? 'Blog will be published and visible to users' : 'Blog will be saved as draft'}
-                  </Typography>
-                </Grid> */}
-
                 {/* Image Upload */}
                 <Grid item xs={12} sm={6}>
                   <Box>
                     <Typography variant="body2" sx={{ mb: 1 }}>
-                      Blog Image *
+                      Blog Image {isEdit ? '(optional, current image shown below)' : '*'}
                     </Typography>
+
+                    {/* Show existing/new file name */}
+                    {/* <TextField
+                      fullWidth
+                      variant="outlined"
+                      value={fileName || ''}
+                      placeholder="No file selected"
+                      InputProps={{ readOnly: true }}
+                    /> */}
+
+                    {/* Actual file input */}
                     <input
                       type="file"
                       accept="image/*"
+                      // value={fileName || ''}
                       onChange={(event) => {
                         const file = event.currentTarget.files[0];
                         setFieldValue('image', file);
                         if (file) {
+                          setFileName(file.name);
                           const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setPreviewImage(reader.result);
-                          };
+                          reader.onloadend = () => setPreviewImage(reader.result);
                           reader.readAsDataURL(file);
-                        } else {
-                          setPreviewImage(null);
                         }
                       }}
                       style={{
+                        marginTop: '8px',
                         width: '100%',
-                        padding: '10px',
+                        padding: '6px',
                         border: '1px solid #ccc',
-                        borderRadius: '4px'
+                        borderRadius: '4px',
                       }}
                     />
-                    {touched.image && errors.image && (
-                      <Typography color="error" variant="caption">
-                        {errors.image}
-                      </Typography>
+
+                    {/* Remove Image Button */}
+                    {previewImage && (
+                      <Button
+                        size="small"
+                        color="error"
+                        sx={{ mt: 1 }}
+                        onClick={() => {
+                          setPreviewImage(null);
+                          setFileName('');
+                          setFieldValue('image', null);
+                        }}
+                      >
+                        Remove Image
+                      </Button>
                     )}
                   </Box>
                 </Grid>
 
-                {/* Show Preview Image */}
+                {/* Preview */}
                 {previewImage && (
                   <Grid item xs={12}>
                     <Box>
@@ -215,7 +210,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                           height: 100,
                           objectFit: 'cover',
                           borderRadius: 4,
-                          border: '1px solid #ccc'
+                          border: '1px solid #ccc',
                         }}
                       />
                     </Box>

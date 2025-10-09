@@ -17,6 +17,8 @@ const domesticCollegeSlice = createSlice({
     clearSelectedCollege: (state) => {
       state.selectedCollege = null;
     },
+
+    // 🔹 Add College
     addCollege: (state) => {
       state.loading = true;
       state.error = null;
@@ -31,6 +33,8 @@ const domesticCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // 🔹 Get Domestic Colleges (with pagination)
     getColleges: (state) => {
       state.loading = true;
       state.error = null;
@@ -47,7 +51,7 @@ const domesticCollegeSlice = createSlice({
       state.colleges = [];
     },
 
-
+    // 🔹 Get All Domestic Colleges (no pagination)
     getAllColleges: (state) => {
       state.loading = true;
       state.error = null;
@@ -62,6 +66,7 @@ const domesticCollegeSlice = createSlice({
       state.colleges = [];
     },
 
+    // 🔹 Get College by ID
     getCollegeById: (state) => {
       state.loading = true;
       state.error = null;
@@ -75,6 +80,8 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
       state.selectedCollege = null;
     },
+
+    // 🔹 Count Domestic Colleges
     totalCount: (state) => {
       state.loading = true;
       state.error = null;
@@ -87,6 +94,8 @@ const domesticCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // 🔹 Update College
     updateCollege: (state) => {
       state.loading = true;
       state.error = null;
@@ -108,6 +117,8 @@ const domesticCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // 🔹 Soft Delete
     softDeleteCollege: (state) => {
       state.loading = true;
       state.error = null;
@@ -126,6 +137,8 @@ const domesticCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // 🔹 Hard Delete
     deleteCollege: (state) => {
       state.loading = true;
       state.error = null;
