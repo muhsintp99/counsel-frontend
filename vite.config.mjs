@@ -16,14 +16,14 @@ export default defineConfig(({ mode }) => {
       host: true,
       proxy: {
         '/public': {
-          target: 'http://localhost:5050',
+          target: 'https://api.edspiriainternational.com',
           // target: 'https://counsel-backend-z72e.onrender.com',
           changeOrigin: true,
           rewrite: (path) => path,
         },
         '/countries': {
           // target: 'https://counsel-backend-z72e.onrender.com',
-          target: 'http://localhost:5050',
+          target: 'https://api.edspiriainternational.com',
           changeOrigin: true,
           rewrite: (path) => path,
         },
