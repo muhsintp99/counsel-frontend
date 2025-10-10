@@ -38,16 +38,16 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
         /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.]*)*\/?$/,
         { message: 'Enter a valid URL', excludeEmptyString: true }
       ),
-    image: Yup.mixed().test(
-      'fileType',
-      'Only image files are allowed (jpeg, jpg, png, gif)',
-      function (value) {
-        if (!value && editData?.image) return true;
-        if (!value && !editData) return false;
-        if (!value) return true;
-        return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
-      }
-    ),
+    // image: Yup.mixed().test(
+    //   'fileType',
+    //   'Only image files are allowed (jpeg, jpg, png, gif)',
+    //   function (value) {
+    //     if (!value && editData?.image) return true;
+    //     if (!value && !editData) return false;
+    //     if (!value) return true;
+    //     return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(value.type);
+    //   }
+    // ),
   });
 
 
