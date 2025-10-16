@@ -19,7 +19,7 @@ import { useTheme } from '@mui/material/styles';
 import { pageStyles } from '../../../../assets/style/commen';
 import DeleteModel from '../../../../utils/defult/DeleteModel';
 import AddEdit from './AddEdit';
-import View from './View';
+import View from './view';
 import {
   getColleges,
   addCollege,
