@@ -1,26 +1,20 @@
-// saga.js
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import commonApi from '../../../../container/api';
 import config from '../../../../config';
 import * as actions from './slice';
 
-function createCollegeFormData(payload) {
+function createFormData(payload) {
   const formData = new FormData();
   Object.keys(payload).forEach(key => {
     if (key === 'id') return;
     const value = payload[key];
-    if (value !== null && value !== undefined && value !== '') {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          const id = typeof item === 'object' ? item._id : item;
-          formData.append(`${key}[${index}]`, id);
-        });
-      } else if (key === 'image' && value instanceof File) {
-        formData.append(key, value);
-      } else {
-        formData.append(key, value);
-      }
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => formData.append(`${key}[${index}]`, item._id || item));
+    } else if (key === 'image' && value instanceof File) {
+      formData.append(key, value);
+    } else if (value !== undefined && value !== null && value !== '') {
+      formData.append(key, value);
     }
   });
   return formData;
@@ -28,143 +22,113 @@ function createCollegeFormData(payload) {
 
 function* getCollegesSaga(action) {
   try {
-    const queryParams = action.payload
-      ? new URLSearchParams({ ...action.payload, isDomestic: false }).toString()
-      : 'isDomestic=false';
-    const apiUrl = `${config.configApi}/college?${queryParams}`;
-    const params = { api: apiUrl, method: 'GET', authorization: false };
-    const response = yield call(commonApi, params);
-    const colleges = response.colleges || response.data || response || [];
-    const pagination = response.colleges ? {
-      totalPages: response.totalPages,
-      currentPage: response.currentPage,
-      total: response.total
-    } : null;
-    yield put(actions.getCollegesSuccess({ colleges, pagination }));
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Failed to load international colleges';
-    yield put(actions.getCollegesFail(errorMessage));
-    toast.error(errorMessage);
+    const query = new URLSearchParams({ ...(action.payload || {}), isDomestic: false }).toString();
+    const apiUrl = `${config.configApi}/college?${query}`;
+    const res = yield call(commonApi, { api: apiUrl, method: 'GET' });
+    yield put(actions.getCollegesSuccess({
+      colleges: res.colleges || res.data || [],
+      pagination: res.colleges ? {
+        totalPages: res.totalPages,
+        currentPage: res.currentPage,
+        total: res.total
+      } : null
+    }));
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Failed to load international colleges';
+    yield put(actions.getCollegesFail(msg));
+    toast.error(msg);
   }
 }
 
 function* getCollegeByIdSaga(action) {
   try {
-    const params = {
+    const res = yield call(commonApi, {
       api: `${config.configApi}/college/${action.payload}`,
       method: 'GET',
-      authorization: false,
-    };
-    const response = yield call(commonApi, params);
-    yield put(actions.getCollegeByIdSuccess(response.data || response));
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Failed to get international college';
-    yield put(actions.getCollegeByIdFail(errorMessage));
-    toast.error(errorMessage);
+    });
+    yield put(actions.getCollegeByIdSuccess(res.data || res));
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Failed to load college details';
+    yield put(actions.getCollegeByIdFail(msg));
+    toast.error(msg);
   }
 }
 
 function* addCollegeSaga(action) {
   try {
-    const formData = createCollegeFormData(action.payload);
-    const params = {
+    const formData = createFormData({ ...action.payload, isDomestic: false });
+    const res = yield call(commonApi, {
       api: `${config.configApi}/college`,
       method: 'POST',
-      authorization: 'Bearer',
       body: formData,
-    };
-    const response = yield call(commonApi, params);
-    yield put(actions.addCollegeSuccess(response.data || response));
+      authorization: 'Bearer',
+    });
+    yield put(actions.addCollegeSuccess(res.data || res));
     yield put(actions.getColleges({ isDomestic: false }));
     toast.success('International college added successfully');
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Failed to add international college';
-    yield put(actions.addCollegeFail(errorMessage));
-    toast.error(errorMessage);
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Add failed';
+    yield put(actions.addCollegeFail(msg));
+    toast.error(msg);
   }
 }
 
 function* updateCollegeSaga(action) {
   try {
-    const { id, ...updateData } = action.payload;
-    const formData = createCollegeFormData(updateData);
-    const params = {
+    const { id, ...payload } = action.payload;
+    const formData = createFormData(payload);
+    const res = yield call(commonApi, {
       api: `${config.configApi}/college/${id}`,
       method: 'PUT',
       body: formData,
       authorization: 'Bearer',
-    };
-    const response = yield call(commonApi, params);
-    yield put(actions.updateCollegeSuccess(response.data || response));
+    });
+    yield put(actions.updateCollegeSuccess(res.data || res));
     yield put(actions.getColleges({ isDomestic: false }));
     toast.success('International college updated successfully');
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Update failed';
-    yield put(actions.updateCollegeFail(errorMessage));
-    toast.error(errorMessage);
-  }
-}
-
-function* softDeleteCollegeSaga(action) {
-  try {
-    const params = {
-      api: `${config.configApi}/college/${action.payload}`,
-      method: 'PATCH',
-      authorization: 'Bearer',
-      body: { updatedBy: 'admin' },
-    };
-    const response = yield call(commonApi, params);
-    yield put(actions.softDeleteCollegeSuccess(response.data || response));
-    yield put(actions.getColleges({ isDomestic: false }));
-    toast.success('International college soft deleted successfully');
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Soft delete failed';
-    yield put(actions.softDeleteCollegeFail(errorMessage));
-    toast.error(errorMessage);
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Update failed';
+    yield put(actions.updateCollegeFail(msg));
+    toast.error(msg);
   }
 }
 
 function* deleteCollegeSaga(action) {
   try {
-    const params = {
+    yield call(commonApi, {
       api: `${config.configApi}/college/${action.payload}`,
       method: 'DELETE',
       authorization: 'Bearer',
-    };
-    yield call(commonApi, params);
+    });
     yield put(actions.deleteCollegeSuccess(action.payload));
     yield put(actions.getColleges({ isDomestic: false }));
     toast.success('International college deleted successfully');
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Delete failed';
-    yield put(actions.deleteCollegeFail(errorMessage));
-    toast.error(errorMessage);
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Delete failed';
+    yield put(actions.deleteCollegeFail(msg));
+    toast.error(msg);
   }
 }
 
 function* totalCountSaga() {
   try {
-    const params = {
-      api: `${config.configApi}/college/count?isDomestic=false`,
+    const res = yield call(commonApi, {
+      api: `${config.configApi}/college/count`,
       method: 'GET',
-      authorization: false,
-    };
-    const response = yield call(commonApi, params);
-    const count = response.count || response.data?.count || 0;
-    yield put(actions.totalCountSuccess({ count }));
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Failed to get international college count';
-    yield put(actions.totalCountFail(errorMessage));
-    toast.error(errorMessage);
+    });
+    yield put(actions.totalCountSuccess({ count: res.count || res.data?.count || 0 }));
+  } catch (err) {
+    const msg = err.response?.data?.error || err.message || 'Count failed';
+    yield put(actions.totalCountFail(msg));
+    toast.error(msg);
   }
 }
 
-export default function* InternationalCollegeActionWatcher() {
+export default function* InternationalCollegeWatcher() {
   yield takeEvery('internationalColleges/getColleges', getCollegesSaga);
   yield takeEvery('internationalColleges/totalCount', totalCountSaga);
   yield takeEvery('internationalColleges/addCollege', addCollegeSaga);
   yield takeEvery('internationalColleges/getCollegeById', getCollegeByIdSaga);
   yield takeEvery('internationalColleges/updateCollege', updateCollegeSaga);
-  yield takeEvery('internationalColleges/softDeleteCollege', softDeleteCollegeSaga);
   yield takeEvery('internationalColleges/deleteCollege', deleteCollegeSaga);
 }

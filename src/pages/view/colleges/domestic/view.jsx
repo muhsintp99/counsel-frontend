@@ -14,17 +14,14 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { viewDrawerStyles } from '../../../../assets/style/commen';
 
 const capitalize = (val) => {
+  if (!val) return 'N/A';
   if (Array.isArray(val)) {
-    return val.map((v) =>
-      typeof v === 'string'
-        ? v.charAt(0).toUpperCase() + v.slice(1).toLowerCase()
-        : v
-    );
+    return val.map((item) => (typeof item === 'string' ? item.charAt(0).toUpperCase() + item.slice(1) : item));
   }
   if (typeof val === 'string') {
-    return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+    return val.charAt(0).toUpperCase() + val.slice(1);
   }
-  return val || '';
+  return String(val);
 };
 
 const View = ({ open, onClose, data }) => {
@@ -35,10 +32,7 @@ const View = ({ open, onClose, data }) => {
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: {
-            sm: data && Object.keys(data).length > 6 ? '90%' : '50%',
-            md: data && Object.keys(data).length > 6 ? '50%' : '30%',
-          },
+          width: { xs: '90%', sm: '50%', md: '40%' },
         },
       }}
     >
@@ -66,13 +60,14 @@ const View = ({ open, onClose, data }) => {
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Image</strong></Typography>
                   <img
-                    src={data.image || '/public/defult/folder.png'}
+                    src={data.image || '/public/default/college.png'}
                     alt="college"
                     style={{
                       maxWidth: '200px',
                       maxHeight: '160px',
                       borderRadius: '4px',
                       marginTop: '4px',
+                      objectFit: 'contain',
                     }}
                   />
                 </Box>
@@ -84,15 +79,6 @@ const View = ({ open, onClose, data }) => {
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>College Name</strong></Typography>
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.name)}</Typography>
-                </Box>
-              </Box>
-
-              {/* Code */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>College Code</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.code}</Typography>
                 </Box>
               </Box>
 
@@ -113,10 +99,7 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.phone || 'N/A'}</Typography>
                 </Box>
               </Box>
-            </Grid>
 
-            {/* Right Section */}
-            <Grid item xs={12} md={6}>
               {/* Address */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
@@ -125,7 +108,10 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.address || 'N/A'}</Typography>
                 </Box>
               </Box>
+            </Grid>
 
+            {/* Right Section */}
+            <Grid item xs={12} md={6}>
               {/* Website */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
@@ -135,12 +121,23 @@ const View = ({ open, onClose, data }) => {
                 </Box>
               </Box>
 
+              
+
               {/* Country */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Country</strong></Typography>
                   <Typography sx={viewDrawerStyles.value}>{data.country?.name || 'N/A'}</Typography>
+                </Box>
+              </Box>
+
+              {/* State */}
+              <Box mb={2} style={{ display: 'flex' }}>
+                <ArrowRightIcon fontSize="small" />
+                <Box>
+                  <Typography sx={viewDrawerStyles.label}><strong>State</strong></Typography>
+                  <Typography sx={viewDrawerStyles.value}>{data.state?.name || 'N/A'}</Typography>
                 </Box>
               </Box>
 
@@ -172,25 +169,17 @@ const View = ({ open, onClose, data }) => {
                 </Box>
               </Box>
 
-              {/* Description */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Description</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.desc || 'N/A'}</Typography>
-                </Box>
-              </Box>
-
+              
               {/* Courses */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Courses</strong></Typography>
-                  {data.courses?.length > 0 ? (
+                  {Array.isArray(data.courses) && data.courses.length > 0 ? (
                     <List dense>
                       {data.courses.map((course) => (
                         <ListItem key={course._id}>
-                          <ListItemText primary={course.title} />
+                          <ListItemText primary={course.title || 'N/A'} />
                         </ListItem>
                       ))}
                     </List>

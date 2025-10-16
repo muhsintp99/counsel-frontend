@@ -1,3 +1,4 @@
+// src/container/colleges/domestic/slice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const domesticCollegeSlice = createSlice({
@@ -18,26 +19,35 @@ const domesticCollegeSlice = createSlice({
       state.selectedCollege = null;
     },
 
-    // 🔹 Add College
+    // Add
     addCollege: (state) => {
       state.loading = true;
-      state.error = null;
     },
     addCollegeSuccess: (state, action) => {
       state.loading = false;
-      if (action.payload) {
-        state.colleges.unshift(action.payload);
-      }
+      if (action.payload) state.colleges.unshift(action.payload);
     },
     addCollegeFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
 
-    // 🔹 Get Domestic Colleges (with pagination)
+    // Get All
+    getAllColleges: (state) => {
+      state.loading = true;
+    },
+    getAllCollegesSuccess: (state, action) => {
+      state.loading = false;
+      const { colleges, pagination } = action.payload;
+      state.colleges = colleges || [];
+      state.pagination = pagination || null;
+    },
+    getAllCollegesFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     getColleges: (state) => {
       state.loading = true;
-      state.error = null;
     },
     getCollegesSuccess: (state, action) => {
       state.loading = false;
@@ -48,28 +58,11 @@ const domesticCollegeSlice = createSlice({
     getCollegesFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
-      state.colleges = [];
     },
 
-    // 🔹 Get All Domestic Colleges (no pagination)
-    getAllColleges: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    getAllCollegesSuccess: (state, action) => {
-      state.loading = false;
-      state.colleges = action.payload || [];
-    },
-    getAllCollegesFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-      state.colleges = [];
-    },
-
-    // 🔹 Get College by ID
+    // Get One
     getCollegeById: (state) => {
       state.loading = true;
-      state.error = null;
     },
     getCollegeByIdSuccess: (state, action) => {
       state.loading = false;
@@ -78,13 +71,11 @@ const domesticCollegeSlice = createSlice({
     getCollegeByIdFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
-      state.selectedCollege = null;
     },
 
-    // 🔹 Count Domestic Colleges
+    // Count
     totalCount: (state) => {
       state.loading = true;
-      state.error = null;
     },
     totalCountSuccess: (state, action) => {
       state.loading = false;
@@ -95,64 +86,32 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
     },
 
-    // 🔹 Update College
+    // Update
     updateCollege: (state) => {
       state.loading = true;
-      state.error = null;
     },
     updateCollegeSuccess: (state, action) => {
       state.loading = false;
       const updated = action.payload;
-      if (updated && updated._id) {
-        const index = state.colleges.findIndex(item => item._id === updated._id);
-        if (index !== -1) {
-          state.colleges[index] = updated;
-        }
-        if (state.selectedCollege?._id === updated._id) {
-          state.selectedCollege = updated;
-        }
-      }
+      const index = state.colleges.findIndex(c => c._id === updated._id);
+      if (index !== -1) state.colleges[index] = updated;
+      if (state.selectedCollege?._id === updated._id) state.selectedCollege = updated;
     },
     updateCollegeFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
 
-    // 🔹 Soft Delete
-    softDeleteCollege: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    softDeleteCollegeSuccess: (state, action) => {
-      state.loading = false;
-      const deleted = action.payload;
-      if (deleted && deleted.data && deleted.data._id) {
-        state.colleges = state.colleges.filter(item => item._id !== deleted.data._id);
-        if (state.selectedCollege?._id === deleted.data._id) {
-          state.selectedCollege = null;
-        }
-      }
-    },
-    softDeleteCollegeFail: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // 🔹 Hard Delete
+    // Delete (Permanent)
     deleteCollege: (state) => {
       state.loading = true;
-      state.error = null;
     },
     deleteCollegeSuccess: (state, action) => {
       state.loading = false;
       const deletedId = action.payload;
-      if (deletedId) {
-        state.colleges = state.colleges.filter(c => c._id !== deletedId);
-        if (state.selectedCollege?._id === deletedId) {
-          state.selectedCollege = null;
-        }
-        state.collegeCount = Math.max(0, state.collegeCount - 1);
-      }
+      state.colleges = state.colleges.filter(c => c._id !== deletedId);
+      if (state.selectedCollege?._id === deletedId) state.selectedCollege = null;
+      state.collegeCount = Math.max(0, state.collegeCount - 1);
     },
     deleteCollegeFail: (state, action) => {
       state.loading = false;
@@ -167,12 +126,12 @@ export const {
   addCollege,
   addCollegeSuccess,
   addCollegeFail,
-  getColleges,
-  getCollegesSuccess,
-  getCollegesFail,
   getAllColleges,
   getAllCollegesSuccess,
   getAllCollegesFail,
+  getColleges,
+  getCollegesSuccess,
+  getCollegesFail,
   getCollegeById,
   getCollegeByIdSuccess,
   getCollegeByIdFail,
@@ -182,9 +141,6 @@ export const {
   updateCollege,
   updateCollegeSuccess,
   updateCollegeFail,
-  softDeleteCollege,
-  softDeleteCollegeSuccess,
-  softDeleteCollegeFail,
   deleteCollege,
   deleteCollegeSuccess,
   deleteCollegeFail,

@@ -5,7 +5,6 @@ import {
   addCollege,
   updateCollege,
   deleteCollege,
-  softDeleteCollege,
 } from '../../../container/colleges/international/slice';
 import {
   Typography,
@@ -79,12 +78,8 @@ const Index = () => {
     setDeleteDialog({ open: false, id: null });
   };
 
-  const handleDelete = (id, isSoftDelete) => {
-    if (isSoftDelete) {
-      dispatch(softDeleteCollege(id));
-    } else {
-      dispatch(deleteCollege(id));
-    }
+  const handleDelete = (id) => {
+    dispatch(deleteCollege(id));
     handleCloseDeleteDialog();
   };
 
@@ -216,7 +211,7 @@ const Index = () => {
                 </Button>
               </CardActions>
             </Card>
-  </Grid>
+          </Grid>
         ))}
       </Grid>
 
@@ -234,9 +229,7 @@ const Index = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-          <Button onClick={() => handleDelete(deleteDialog.id, true)} color="warning">
-            Soft Delete
-          </Button>
+
           <Button onClick={() => handleDelete(deleteDialog.id, false)} color="error">
             Permanent Delete
           </Button>

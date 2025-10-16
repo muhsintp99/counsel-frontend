@@ -1,12 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  getColleges,
-  addCollege,
-  updateCollege,
-  deleteCollege,
-  softDeleteCollege,
-} from '../../../container/colleges/domestic/slice';
+// src/pages/colleges/domestic/index.jsx
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Typography,
   Box,
@@ -16,40 +9,48 @@ import {
   Card,
   CardContent,
   CardActions,
+  CardMedia,
   Button,
   useMediaQuery,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  CardMedia,
 } from '@mui/material';
-import { SearchOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '@mui/material/styles';
 import { pageStyles } from '../../../../assets/style/commen';
+import DeleteModel from '../../../../utils/defult/DeleteModel';
 import AddEdit from './AddEdit';
-import View from './view';
+import View from './View';
+import {
+  getColleges,
+  addCollege,
+  updateCollege,
+  deleteCollege,
+} from '../../../container/colleges/domestic/slice';
 
-const Index = () => {
+const capitalize = (val) => (val ? val.charAt(0).toUpperCase() + val.slice(1) : '');
+
+const DomesticColleges = () => {
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const { colleges, pagination, loading, error } = useSelector((state) => state.domesticColleges);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [viewData, setViewData] = useState(null);
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, college: null });
 
-  const dispatch = useDispatch();
-  const { colleges, loading, error } = useSelector((state) => state.domesticColleges);
-
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const title = 'Domestic Colleges';
 
-  // ✅ Load only domestic colleges
+  // 🟢 Load Colleges
   useEffect(() => {
-    dispatch(getColleges({ isDomestic: true }));
+    dispatch(getColleges({ isDomestic: true, page: 1, limit: 50 }));
   }, [dispatch]);
 
+  // 🟡 Dialog Handlers
   const handleOpenDialog = (college = null) => {
     setSelectedCollege(college);
     setOpenDialog(true);
@@ -60,8 +61,9 @@ const Index = () => {
     setSelectedCollege(null);
   };
 
-  const handleView = (data) => {
-    setViewData(data);
+  // 🟢 View Drawer
+  const handleView = (college) => {
+    setViewData(college);
     setIsViewOpen(true);
   };
 
@@ -70,160 +72,120 @@ const Index = () => {
     setViewData(null);
   };
 
-  const handleOpenDeleteDialog = (id) => {
-    setDeleteDialog({ open: true, id });
+  // 🔴 Delete Dialog
+  const handleOpenDeleteDialog = (college) => {
+    setDeleteDialog({ open: true, college });
   };
 
   const handleCloseDeleteDialog = () => {
-    setDeleteDialog({ open: false, id: null });
+    setDeleteDialog({ open: false, college: null });
   };
 
-  // ✅ Delete with refresh
-  const handleDelete = (id, isSoftDelete) => {
-    if (isSoftDelete) {
-      dispatch(softDeleteCollege(id));
-    } else {
-      dispatch(deleteCollege(id));
-    }
-    dispatch(getColleges({ isDomestic: true }));
+  const handleDeleteConfirm = async (college) => {
+    await dispatch(deleteCollege(college._id));
+    await dispatch(getColleges({ isDomestic: true, page: 1, limit: 50 }));
     handleCloseDeleteDialog();
   };
 
-  // ✅ Add or Update with refresh
-  const handleSubmit = (values) => {
-    if (selectedCollege && selectedCollege._id) {
-      dispatch(updateCollege({ id: selectedCollege._id, ...values }));
+  // 🟠 Add / Edit Submit
+  const handleSubmit = async (values) => {
+    if (selectedCollege?._id) {
+      await dispatch(updateCollege({ id: selectedCollege._id, ...values }));
     } else {
-      dispatch(addCollege(values));
+      await dispatch(addCollege(values));
     }
-    dispatch(getColleges({ isDomestic: true }));
+    await dispatch(getColleges({ isDomestic: true, page: 1, limit: 50 }));
     handleCloseDialog();
   };
 
+  // 🔍 Filtered Search
   const filteredColleges = useMemo(() => {
-    const validColleges = Array.isArray(colleges)
-      ? colleges.filter((item) => item && typeof item === 'object')
-      : [];
-    return validColleges.filter((item) => {
-      const search = searchQuery.toLowerCase();
-      return (
-        String(item.name || '').toLowerCase().includes(search) ||
-        String(item.email || '').toLowerCase().includes(search) ||
-        String(item.phone || '').toLowerCase().includes(search) ||
-        String(item.address || '').toLowerCase().includes(search) ||
-        String(item.country?.name || '').toLowerCase().includes(search) ||
-        item.courses?.some((course) => String(course.title || '').toLowerCase().includes(search))
-      );
-    });
+    const query = searchQuery.toLowerCase();
+    return colleges.filter((college) =>
+      [college.name, college.email, college.phone, college.country?.name, college.address]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(query))
+    );
   }, [colleges, searchQuery]);
+
+  const totalColleges = pagination?.total || colleges.length;
 
   return (
     <Box sx={pageStyles.mainBox}>
-      <Typography variant="h4" sx={pageStyles.title}>{title}</Typography>
+      {/* 🧭 Header */}
+      <Typography variant="h4" sx={pageStyles.title}>
+        {title}
+      </Typography>
       <Typography component="p" sx={pageStyles.countList}>
-        <span style={{ color: '#234155', fontWeight: 600 }}>{colleges.length} {title}</span> are listed below
+        <strong>{totalColleges}</strong> {title} are listed below
       </Typography>
 
+      {/* ❗ Error */}
       {error && (
-        <Typography variant="body2" color="error" sx={{ mt: 2, p: 2, backgroundColor: '#ffebee' }}>
-          Error: {error}
+        <Typography color="error" sx={{ mt: 2, p: 1, backgroundColor: '#ffebee' }}>
+          {error}
         </Typography>
       )}
 
+      {/* 🔍 Search & Add */}
       <Box sx={pageStyles.searchbox}>
         <TextField
           fullWidth
-          variant="outlined"
-          placeholder="Search by Name, Code, Email, Phone, Address, Country, or Course"
+          placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <SearchOutlined style={pageStyles.newButtonIcon} />
+                <SearchOutlined />
               </InputAdornment>
             ),
           }}
-          sx={{
-            ...pageStyles.searchInput,
-            maxHeight: 35,
-            '& .MuiOutlinedInput-root': {
-              height: 35,
-              fontSize: '14px',
-            },
-            '& .MuiInputBase-input': {
-              padding: '8px 12px',
-            },
-          }}
+          sx={{ ...pageStyles.searchInput, maxHeight: 38 }}
         />
         <Button
           variant="contained"
+          sx={{ ml: 2, mt: isMobile ? 1 : 0 }}
           onClick={() => handleOpenDialog()}
-          sx={{ mt: 2, ml: 2 }}
         >
-          Add Domestic College
+          Add College
         </Button>
       </Box>
 
-      {loading && (
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          Loading Domestic colleges...
-        </Typography>
-      )}
-
+      {/* 🧾 List */}
+      {loading && <Typography sx={{ mt: 2 }}>Loading...</Typography>}
       {!loading && filteredColleges.length === 0 && (
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          No Domestic colleges found.
-        </Typography>
+        <Typography sx={{ mt: 2 }}>No colleges found.</Typography>
       )}
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {filteredColleges.map((college) => (
           <Grid item xs={12} sm={6} md={4} key={college._id}>
             <Card sx={{ boxShadow: 3 }}>
-              <CardContent>
-                <Typography variant="h6">{college.name}</Typography>
-              </CardContent>
               <CardMedia
-                sx={{ height: 140, padding: '0px 10px' }}
-                image={college.image}
                 component="img"
-                title="College Image"
+                height="140"
+                image={college.image || '/public/default/college.png'}
+                alt={college.name}
               />
               <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  Email: {college.email || 'N/A'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Phone: {college.phone || 'N/A'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Address: {college.address || 'N/A'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Country: {college.country?.name || 'N/A'}
-                </Typography>
+                <Typography variant="h6">{college.name}</Typography>
+                <Typography>Email: {college.email || 'N/A'}</Typography>
+                <Typography>Phone: {college.phone || 'N/A'}</Typography>
+                <Typography>Country: {college.country?.name || 'N/A'}</Typography>
+                <Typography>Status: {capitalize(college.status)}</Typography>
               </CardContent>
-              <CardActions sx={{ display: 'flex', justifyContent: 'space-around' }}>
-                <Button
-                  size="small"
-                  startIcon={<EyeOutlined />}
-                  onClick={() => handleView(college)}
-                >
+              <CardActions sx={{ justifyContent: 'space-around' }}>
+                <Button startIcon={<EyeOutlined />} onClick={() => handleView(college)}>
                   View
                 </Button>
-                <Button
-                  size="small"
-                  startIcon={<EditOutlined />}
-                  onClick={() => handleOpenDialog(college)}
-                >
+                <Button startIcon={<EditOutlined />} onClick={() => handleOpenDialog(college)}>
                   Edit
                 </Button>
                 <Button
-                  size="small"
-                  startIcon={<DeleteOutlined />}
-                  onClick={() => handleOpenDeleteDialog(college._id)}
                   color="error"
+                  startIcon={<DeleteOutlined />}
+                  onClick={() => handleOpenDeleteDialog(college)}
                 >
                   Delete
                 </Button>
@@ -233,40 +195,21 @@ const Index = () => {
         ))}
       </Grid>
 
-      <AddEdit
-        open={openDialog}
-        onClose={handleCloseDialog}
-        onSubmit={handleSubmit}
-        editData={selectedCollege}
+      {/* ➕ Add/Edit Dialog */}
+      <AddEdit open={openDialog} onClose={handleCloseDialog} onSubmit={handleSubmit} editData={selectedCollege} />
+
+      {/* 👁️ View Drawer */}
+      <View open={isViewOpen} onClose={handleViewClose} data={viewData} />
+
+      {/* ❌ Delete Modal */}
+      <DeleteModel
+        open={deleteDialog.open}
+        onClose={handleCloseDeleteDialog}
+        data={deleteDialog.college}
+        onConfirm={handleDeleteConfirm}
       />
-
-      {viewData && (
-        <View
-          open={isViewOpen}
-          onClose={handleViewClose}
-          data={viewData}
-        />
-      )}
-
-      <Dialog open={deleteDialog.open} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Do you want to soft delete (mark as deleted) or permanently delete this Domestic college?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-          <Button onClick={() => handleDelete(deleteDialog.id, true)} color="warning">
-            Soft Delete
-          </Button>
-          <Button onClick={() => handleDelete(deleteDialog.id, false)} color="error">
-            Permanent Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
 
-export default Index;
+export default DomesticColleges;
