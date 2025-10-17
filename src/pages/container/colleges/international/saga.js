@@ -6,11 +6,11 @@ import * as actions from './slice';
 
 function createFormData(payload) {
   const formData = new FormData();
-  Object.keys(payload).forEach(key => {
+  Object.keys(payload).forEach((key) => {
     if (key === 'id') return;
     const value = payload[key];
     if (Array.isArray(value)) {
-      value.forEach((item, index) => formData.append(`${key}[${index}]`, item._id || item));
+      value.forEach((item, i) => formData.append(`${key}[${i}]`, item._id || item));
     } else if (key === 'image' && value instanceof File) {
       formData.append(key, value);
     } else if (value !== undefined && value !== null && value !== '') {
@@ -25,13 +25,14 @@ function* getCollegesSaga(action) {
     const query = new URLSearchParams({ ...(action.payload || {}), isDomestic: false }).toString();
     const apiUrl = `${config.configApi}/college?${query}`;
     const res = yield call(commonApi, { api: apiUrl, method: 'GET' });
+
     yield put(actions.getCollegesSuccess({
       colleges: res.colleges || res.data || [],
-      pagination: res.colleges ? {
+      pagination: res.pagination || {
         totalPages: res.totalPages,
         currentPage: res.currentPage,
-        total: res.total
-      } : null
+        total: res.total,
+      },
     }));
   } catch (err) {
     const msg = err.response?.data?.error || err.message || 'Failed to load international colleges';
@@ -48,7 +49,7 @@ function* getCollegeByIdSaga(action) {
     });
     yield put(actions.getCollegeByIdSuccess(res.data || res));
   } catch (err) {
-    const msg = err.response?.data?.error || err.message || 'Failed to load college details';
+    const msg = err.response?.data?.error || err.message || 'Failed to get college';
     yield put(actions.getCollegeByIdFail(msg));
     toast.error(msg);
   }
@@ -126,9 +127,9 @@ function* totalCountSaga() {
 
 export default function* InternationalCollegeWatcher() {
   yield takeEvery('internationalColleges/getColleges', getCollegesSaga);
-  yield takeEvery('internationalColleges/totalCount', totalCountSaga);
-  yield takeEvery('internationalColleges/addCollege', addCollegeSaga);
   yield takeEvery('internationalColleges/getCollegeById', getCollegeByIdSaga);
+  yield takeEvery('internationalColleges/addCollege', addCollegeSaga);
   yield takeEvery('internationalColleges/updateCollege', updateCollegeSaga);
   yield takeEvery('internationalColleges/deleteCollege', deleteCollegeSaga);
+  yield takeEvery('internationalColleges/totalCount', totalCountSaga);
 }

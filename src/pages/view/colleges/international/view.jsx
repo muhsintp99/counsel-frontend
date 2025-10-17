@@ -86,52 +86,12 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.name)}</Typography>
                 </Box>
               </Box>
-
-              {/* Code */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>College Code</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.code}</Typography>
-                </Box>
-              </Box>
-
-              {/* Email */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Email</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.email || 'N/A'}</Typography>
-                </Box>
-              </Box>
-
-              {/* Phone */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Phone</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.phone || 'N/A'}</Typography>
-                </Box>
-              </Box>
-            </Grid>
-
-            {/* Right Section */}
-            <Grid item xs={12} md={6}>
               {/* Location */}
               <Box mb={2} style={{ display: 'flex' }}>
                 <ArrowRightIcon fontSize="small" />
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Location</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.location || 'N/A'}</Typography>
-                </Box>
-              </Box>
-
-              {/* Website */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Website</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.website || 'N/A'}</Typography>
+                  <Typography sx={viewDrawerStyles.value}>{data.address || 'N/A'}</Typography>
                 </Box>
               </Box>
 
@@ -143,6 +103,12 @@ const View = ({ open, onClose, data }) => {
                   <Typography sx={viewDrawerStyles.value}>{data.country?.name || 'N/A'}</Typography>
                 </Box>
               </Box>
+
+            </Grid>
+
+            {/* Right Section */}
+            <Grid item xs={12} md={6}>
+
 
               {/* Category (List) */}
               <Box mb={2} style={{ display: 'flex' }}>
@@ -169,15 +135,6 @@ const View = ({ open, onClose, data }) => {
                 <Box>
                   <Typography sx={viewDrawerStyles.label}><strong>Status</strong></Typography>
                   <Typography sx={viewDrawerStyles.value}>{capitalize(data.status)}</Typography>
-                </Box>
-              </Box>
-
-              {/* Description */}
-              <Box mb={2} style={{ display: 'flex' }}>
-                <ArrowRightIcon fontSize="small" />
-                <Box>
-                  <Typography sx={viewDrawerStyles.label}><strong>Description</strong></Typography>
-                  <Typography sx={viewDrawerStyles.value}>{data.desc || 'N/A'}</Typography>
                 </Box>
               </Box>
 

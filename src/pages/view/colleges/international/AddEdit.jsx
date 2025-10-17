@@ -24,7 +24,7 @@ import { getInternationalCourses } from '../../../container/courses/slice';
 // ✅ Validation Schema
 const validationSchema = Yup.object({
   name: Yup.string().nullable(),
-  location: Yup.string().nullable(),
+  address: Yup.string().nullable(),
   country: Yup.string().required('Country is required'),
   category: Yup.array()
     .of(Yup.string())
@@ -94,7 +94,7 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
 
   const initialValues = {
     name: editData?.name || '',
-    location: editData?.location || '',
+    address: editData?.address || '',
     country: editData?.country?._id || '',
     category: Array.isArray(editData?.category) ? editData.category : [],
     status: editData?.status || '',
@@ -145,16 +145,16 @@ const AddEdit = ({ open, onClose, onSubmit, editData }) => {
                   />
                 </Grid>
 
-                {/* Location */}
+                {/* address */}
                 <Grid item xs={12}>
                   <Field
                     as={TextField}
-                    name="location"
+                    name="address"
                     label="Location"
                     fullWidth
                     variant="outlined"
-                    error={touched.location && Boolean(errors.location)}
-                    helperText={touched.location && errors.location}
+                    error={touched.address && Boolean(errors.address)}
+                    helperText={touched.address && errors.address}
                   />
                 </Grid>
 

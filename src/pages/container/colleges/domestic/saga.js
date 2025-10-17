@@ -1,4 +1,3 @@
-// src/container/colleges/domestic/saga.js
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import commonApi from '../../../../container/api';
@@ -22,13 +21,13 @@ function createCollegeFormData(payload) {
   return formData;
 }
 
+// 📦 Get All Domestic Colleges
 export function* getAllCollegesSaga() {
   try {
     const params = {
-      api: `${config.configApi}/college`,
+      api: `${config.configApi}/college?isDomestic=true`,
       method: 'GET',
     };
-
     const res = yield call(commonApi, params);
     const colleges = res.colleges || res.data || [];
     const pagination = res.pagination || {
@@ -36,15 +35,15 @@ export function* getAllCollegesSaga() {
       currentPage: res.currentPage,
       total: res.total,
     };
-
     yield put(actions.getAllCollegesSuccess({ colleges, pagination }));
   } catch (err) {
-    const msg = err.response?.data?.error || err.message || 'Failed to load colleges';
+    const msg = err.response?.data?.error || err.message || 'Failed to load domestic colleges';
     yield put(actions.getAllCollegesFail(msg));
     toast.error(msg);
   }
 }
 
+// 🔍 Get Domestic Colleges (Filtered or Paginated)
 function* getCollegesSaga(action) {
   try {
     const query = new URLSearchParams({ ...action.payload, isDomestic: true }).toString();
@@ -64,18 +63,20 @@ function* getCollegesSaga(action) {
   }
 }
 
+// 🏫 Get One College
 function* getCollegeByIdSaga(action) {
   try {
     const params = { api: `${config.configApi}/college/${action.payload}`, method: 'GET' };
     const res = yield call(commonApi, params);
     yield put(actions.getCollegeByIdSuccess(res.data || res));
   } catch (err) {
-    const msg = err.response?.data?.error || err.message || 'Failed to get college';
+    const msg = err.response?.data?.error || err.message || 'Failed to get domestic college';
     yield put(actions.getCollegeByIdFail(msg));
     toast.error(msg);
   }
 }
 
+// ➕ Add College
 function* addCollegeSaga(action) {
   try {
     const formData = createCollegeFormData({ ...action.payload, isDomestic: true });
@@ -91,6 +92,7 @@ function* addCollegeSaga(action) {
   }
 }
 
+// ✏️ Update College
 function* updateCollegeSaga(action) {
   try {
     const { id, ...data } = action.payload;
@@ -107,6 +109,7 @@ function* updateCollegeSaga(action) {
   }
 }
 
+// ❌ Delete College
 function* deleteCollegeSaga(action) {
   try {
     const params = { api: `${config.configApi}/college/${action.payload}`, method: 'DELETE', authorization: 'Bearer' };
@@ -121,6 +124,7 @@ function* deleteCollegeSaga(action) {
   }
 }
 
+// 🔢 Count Domestic Colleges
 function* totalCountSaga() {
   try {
     const params = { api: `${config.configApi}/college/count?isDomestic=true`, method: 'GET' };
@@ -133,8 +137,8 @@ function* totalCountSaga() {
 }
 
 export default function* DomesticCollegeSaga() {
-  yield takeEvery('domesticColleges/getColleges', getCollegesSaga);
   yield takeEvery('domesticColleges/getAllColleges', getAllCollegesSaga);
+  yield takeEvery('domesticColleges/getColleges', getCollegesSaga);
   yield takeEvery('domesticColleges/getCollegeById', getCollegeByIdSaga);
   yield takeEvery('domesticColleges/addCollege', addCollegeSaga);
   yield takeEvery('domesticColleges/updateCollege', updateCollegeSaga);

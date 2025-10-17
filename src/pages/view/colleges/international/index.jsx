@@ -101,7 +101,7 @@ const Index = () => {
       return (
         String(item.name || '').toLowerCase().includes(search) ||
         String(item.code || '').toLowerCase().includes(search) ||
-        String(item.location || '').toLowerCase().includes(search) ||
+        String(item.address || '').toLowerCase().includes(search) ||
         String(item.country?.name || '').toLowerCase().includes(search) ||
         item.courses?.some((course) => String(course.title || '').toLowerCase().includes(search))
       );
@@ -184,7 +184,7 @@ const Index = () => {
               />
               <CardContent>
                 <Typography variant="body2" color="text.secondary">
-                  Location: {college.location || 'N/A'}
+                  Location: {college.address || 'N/A'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Country: {college.country?.name || 'N/A'}

@@ -13,12 +13,14 @@ const internationalCollegeSlice = createSlice({
   reducers: {
     clearError: (state) => { state.error = null; },
     clearSelectedCollege: (state) => { state.selectedCollege = null; },
+
     addCollege: (state) => { state.loading = true; },
     addCollegeSuccess: (state, action) => {
       state.loading = false;
       if (action.payload) state.colleges.unshift(action.payload);
     },
     addCollegeFail: (state, action) => { state.loading = false; state.error = action.payload; },
+
     getColleges: (state) => { state.loading = true; },
     getCollegesSuccess: (state, action) => {
       state.loading = false;
@@ -27,18 +29,21 @@ const internationalCollegeSlice = createSlice({
       state.pagination = pagination || null;
     },
     getCollegesFail: (state, action) => { state.loading = false; state.error = action.payload; },
+
     getCollegeById: (state) => { state.loading = true; },
     getCollegeByIdSuccess: (state, action) => {
       state.loading = false;
       state.selectedCollege = action.payload;
     },
     getCollegeByIdFail: (state, action) => { state.loading = false; state.error = action.payload; },
+
     totalCount: (state) => { state.loading = true; },
     totalCountSuccess: (state, action) => {
       state.loading = false;
       state.collegeCount = action.payload.count || 0;
     },
     totalCountFail: (state, action) => { state.loading = false; state.error = action.payload; },
+
     updateCollege: (state) => { state.loading = true; },
     updateCollegeSuccess: (state, action) => {
       state.loading = false;
@@ -50,6 +55,7 @@ const internationalCollegeSlice = createSlice({
       }
     },
     updateCollegeFail: (state, action) => { state.loading = false; state.error = action.payload; },
+
     deleteCollege: (state) => { state.loading = true; },
     deleteCollegeSuccess: (state, action) => {
       state.loading = false;

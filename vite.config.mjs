@@ -33,7 +33,6 @@ export default defineConfig(({ mode }) => {
     preview: {
       open: true,
       host: true,
-      // 👇 optionally, also allow it in preview mode
       allowedHosts: ['admin.edspiriainternational.com', 'localhost'],
     },
 

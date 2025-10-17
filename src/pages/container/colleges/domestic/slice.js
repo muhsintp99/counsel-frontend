@@ -1,4 +1,3 @@
-// src/container/colleges/domestic/slice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const domesticCollegeSlice = createSlice({
@@ -19,7 +18,7 @@ const domesticCollegeSlice = createSlice({
       state.selectedCollege = null;
     },
 
-    // Add
+    // ➕ Add College
     addCollege: (state) => {
       state.loading = true;
     },
@@ -32,7 +31,7 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Get All
+    // 📦 Get All Colleges
     getAllColleges: (state) => {
       state.loading = true;
     },
@@ -46,6 +45,8 @@ const domesticCollegeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // 🔍 Get Colleges (Domestic)
     getColleges: (state) => {
       state.loading = true;
     },
@@ -60,7 +61,7 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Get One
+    // 🏫 Get One College
     getCollegeById: (state) => {
       state.loading = true;
     },
@@ -73,7 +74,7 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Count
+    // 🔢 Count
     totalCount: (state) => {
       state.loading = true;
     },
@@ -86,7 +87,7 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Update
+    // ✏️ Update
     updateCollege: (state) => {
       state.loading = true;
     },
@@ -102,7 +103,7 @@ const domesticCollegeSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Delete (Permanent)
+    // ❌ Delete
     deleteCollege: (state) => {
       state.loading = true;
     },
